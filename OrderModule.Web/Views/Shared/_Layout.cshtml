@@ -1,49 +1,123 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OrderModule.Web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/OrderModule.Web.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OrderModule.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+<html lang='en'>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - OrderModule.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+<head>
+
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>@ViewData["Title"] - LogiFlow</title>
+
+    @* -- Google Fonts -- *@
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap' rel='stylesheet'>
+
+    @* -- Tabler Icons -- *@
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@@2.44.0/tabler-icons.min.css' />
+
+    @* -- CSS -- *@
+    <link rel='stylesheet' href='~/css/site.css' asp-append-version='true' />
+    @await RenderSectionAsync("Styles", required: false)
+
+</head>
+
+<body>
+
+    <nav class='lf-nav'>
+        <div class='lf-nav__inner'>
+
+            @* -- Logo --  *@
+            <a href='/' class='lf-nav__logo'>
+                <i class='ti ti-truck-delivery lf-nav__logo-icon' aria-hidden='true'></i>
+                <span class='lf-nav__logo-text'>LogiFlow</span>
+            </a>
+
+            @* -- Menu list -- *@
+            <div class='lf-nav__links'>
+
+                <div class='lf-nav__dropdown' id='dd-order'>
+                    <button class='lf-nav__btn'
+                            onclick='toggleDropdown("dd-order")'
+                            aria-expanded='false'>
+                        Order Management
+                        <i class='ti ti-chevron-down' aria-hidden='true'></i>
+                    </button>
+                    <div class='lf-nav__menu' id='dd-order-menu'>
+                        <a href='/OrderManagement/Index' class='lf-nav__menu-item'>
+                            @* <i class='ti ti-mail-up' aria-hidden='true'></i> *@
+                            Message Extractor
+                        </a>
+                        <a href='/OrderManagement/Drafts' class='lf-nav__menu-item'>
+                            @* <i class='ti ti-files' aria-hidden='true'></i> *@
+                            Drafts
+                        </a>
+                    </div>
+                </div>
+
+                <div class='lf-nav__dropdown' id='dd-config'>
+                    <button class='lf-nav__btn'
+                            onclick='toggleDropdown("dd-config")'
+                            aria-expanded='false'>
+                        Configuration
+                        <i class='ti ti-chevron-down' aria-hidden='true'></i>
+                    </button>
+                    <div class='lf-nav__menu' id='dd-config-menu'>
+                        <a href='/OrderManagement/Configura' class='lf-nav__menu-item'>
+                            @* <i class='ti ti-brain' aria-hidden='true'></i> *@
+                            Choose LLM Model
+                        </a>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    </nav>
+
+
+    <main>
+        @RenderBody()
+    </main>
+
+
+    <script src='https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js'></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+
+        @* -- Open / close the dropdown in the menu -- *@
+        function toggleDropdown(id) {
+            var menu = document.getElementById(id + '-menu');
+            var btn  = menu.previousElementSibling;
+            var isOpen = menu.classList.contains('open');
+
+            @* -- Close all open menu -- *@
+            document.querySelectorAll('.lf-nav__menu').forEach(function(m) {
+                m.classList.remove('open');
+            });
+            document.querySelectorAll('.lf-nav__btn').forEach(function(b) {
+                b.setAttribute('aria-expanded', 'false');
+            });
+
+            @* -- Open the chosen one -- *@
+            if (!isOpen) {
+                menu.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        @* -- Click outside the menu to close everything -- *@
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.lf-nav__dropdown')) {
+                document.querySelectorAll('.lf-nav__menu').forEach(function(m) {
+                    m.classList.remove('open');
+                });
+                document.querySelectorAll('.lf-nav__btn').forEach(function(b) {
+                    b.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+    </script>
+
 </body>
 </html>
