@@ -137,9 +137,105 @@
 
 </div>
 
+<div v-if='showFrom'>
+    
+</div>
+
 
 @section Scripts {
     <script>
-        
+       var url = '@Url.Action("ParseSummary", "OrderExtractor")';
+
+        new Vue({
+            el: '#oe-app',
+            data() {
+                return {
+                    showForm: false,
+                    model: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model)),
+                    alertText: '',
+                    isDragging: false,
+                    file: null,
+                };
+            },
+
+            mounted() {
+                // Prevent the browser behavior
+                document.addEventListener('dragover', this._preventDefaults, false);
+                document.addEventListener('drop', this._preventDefaults, false);
+            },
+
+            beforeDestroy() {
+                document.removeEventListener('dragover', this._preventDefaults, false);
+                document.removeEventListener('drop', this._preventDefaults, false);
+            },
+
+            methods: {
+                // Prevent openning a file in new tab of browser
+                _preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                },
+
+                // Drag and drop zone
+                onChange() {
+                    this.file = this.$refs.file.files[0] || null;
+                    this.alertText = '';
+                },
+
+                handleDragover() {
+                    this.isDragging = true;
+                },
+
+                dragleave() {
+                    this.isDragging = false;
+                },
+
+                handleDrop(e) {
+                    const droppedFile = e.dataTransfer.files[0];
+                    if (droppedFile) {
+                        this.file = droppedFile;
+                    }
+                    this.isDragging = false;
+                    this.alertText = '';
+                },
+
+                // Extract the data button
+                submitFile() {
+                    this.alertText = '';
+
+                    if (!this.file) {
+                        this.alertText = 'Please upload a file';
+                        this.showForm = false;
+                        return;
+                    }
+
+                    const format = ['eml', 'msg'];
+                    const extension = this.file.name.split('.').pop().toLowerCase();
+
+                    if (!format.includes(extension)) {
+                        this.alertText = 'Unsupported file format. Please upload .eml or .msg format';
+                        this.showForm = false;
+                        this.file = null;
+                        this.$refs.file.value = '';
+                    } else {
+                        let formData = new FormData();
+                        formData.append('file', this.file);
+
+                        fetch(url, { method: 'POST', body: formData })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.model = data;
+                            this.showForm = true;
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            this.alertText = 'An error during the process occurred. Please try again later';
+                        });
+                    }
+                }
+            }
+        });
+ 
     </script>
 }
