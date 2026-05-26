@@ -1,0 +1,145 @@
+@model OrderModule.Web.Models.ViewModelSummary;
+
+@{
+    ViewData["Title"] = "Order Extractor";
+}
+
+@section Styles {
+    <style>
+        
+        @* -- Upload Zone -- *@
+        .oe-upload-zone {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            padding-top: .5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #drop_zone {
+            display: flex;
+            width: 400px;
+            min-width: 30%;
+            min-height: 170px;
+            background: var(--lf-lavender);
+            border-radius: 8px;
+            border: 2px dashed rgba(62, 95, 68, 0.4);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+            transition: border-color .2s, background .2s;
+        }
+
+        #drop_zone:hover {
+            border-color: var(--lf-green);
+            background: rgba(62, 95, 68, 0.06);
+        }
+
+        #drop_zone label {
+            text-align: center;
+            width: 100%;
+        }
+
+        .oe-drop-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--lf-text-muted);
+        }
+
+        .oe-drop-label i {
+            color: var(--lf-green);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        #file_input {
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            position: absolute;
+            overflow: hidden;
+        }
+
+        .oe-file-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 170px;
+        }
+
+        .oe-file-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start; 
+        }
+
+        .oe-alert {
+            color: #c0392b;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        
+    </style>
+}
+
+<div id='oe-app' class='lf-page'>
+
+    @* -- Title og the page -- *@
+    <h1 class='lf-page-title'>Order Extractor</h1>
+    <p class='lf-page-subtitle'>
+        Here you can upload your email message, and the AI tool will automatically
+        extract all relevant operational data contained within it.
+    </p>
+
+    @* -- File upload area -- *@
+    <div class='oe-upload-zone'>
+
+        <div id='drop_zone'
+        v-on:dragover='handleDragover'
+        v-on:drop='handleDrop'
+        v-on:dragleave='dragleave'>
+
+            <label for='file_input' style='cursor: pointer;'>
+                <div v-if='isDragging'>Release to drop files here</div>
+                <div class='oe-drop-label' v-else>
+                    <i class='ti ti-file-upload' aria-hidden='true'></i>
+                    <span>Drag your file here, or <u>click</u> for file selection</span>
+                </div>
+            </label>
+            <input type='file' id='file_input' name='file' ref='file' v-on:change='onChange' />
+        </div>
+
+        <div class='oe-file-info'>
+            <div>
+                <p>
+                    <strong>Name of the file: </strong>
+                    <span v-if='file'>{{file.name}}</span>
+                </p>
+                <p>
+                    <strong>Size of the file: </strong>
+                    <span v-if='file'>{{Math.round(file.size / 1024) + ' KB'}}</span>
+                </p>
+            </div>
+
+            <div class='oe-file-actions'>
+                <p class='oe-alert'>{{alertText}}</p>
+                <button class='lf-btn' type='button' v-on:click='submitFile'>
+                    Extract the data
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <script>
+        
+    </script>
+}
