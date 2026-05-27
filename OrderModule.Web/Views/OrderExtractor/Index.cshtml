@@ -83,6 +83,60 @@
         }
 
         
+        @* -- Form -- *@
+        .oe-form-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--lf-text);
+            margin-bottom: 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 1.5px solid var(--lf-border);
+            overflow: visible;
+        }
+
+        .oe-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 0;
+        }
+
+        .oe-form-field {
+            padding: .5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-sizing: border-box;
+        }
+
+        .oe-form-field--full {
+            grid-column: 1 / -1;
+        }
+
+        .oe-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--lf-text);
+        }
+
+        .oe-input {
+            border-radius: 6px;
+            border: 1.5px solid rgba(62, 95, 68, 0.25);
+            padding: .4rem .6rem;
+            font-size: 14px;
+            font-family: var(--font-body);
+            color: var(--lf-text);
+            background: #fff;
+            width: 100%;
+            transition: border-color .15s;
+        }
+
+        .oe-input:focus {
+            outline: none;
+            border-color: var(--lf-green);
+            box-shadow: 0 0 0 3px rgba(62, 95, 68, 0.1);
+        }
+
     </style>
 }
 
@@ -135,12 +189,58 @@
 
     </div>
 
-</div>
 
-<div v-if='showFrom'>
-    
-</div>
+    @* -- 8-Field form (appears after extraction) -- *@
+    <div v-if='showForm'>
+        <h4 class='oe-form-title'>File Insight:</h4>
 
+        <form class='oe-form-grid' action='@Url.Action("CreateDraft", "OrderExtractor")' method='post'>
+            <div class='oe-form-field'>
+                <label for='invoice' class='oe-label'>Company Invoice</label>
+                <input type='text' id='invoice' class='oe-input' name='invoice' v-model='model.Invoice'>
+            </div>
+            <div class='oe-form-field'>
+                <label for='transport' class='oe-label'>Transport</label>
+                <input type='text' id='transport' class='oe-input' name='transport' v-model='model.Transport'>
+            </div>
+
+            <div class='oe-form-field'>
+                <label for='depDate' class='oe-label'>Departure date</label>
+                <input type='date' id='depDate' class='oe-input' name='depDate' v-model='model.DepDate'>
+            </div>
+            <div class='oe-form-field'>
+                <label for='depPoint' class='oe-label'>Departure point</label>
+                <input type='text' id='depPoint' class='oe-input' name='depPoint' v-model='model.DepPoint'>
+            </div>
+
+            <div class='oe-form-field'>
+                <label for='arrDate' class='oe-label'>Arrival date</label>
+                <input type='date' id='arrDate' class='oe-input' name='arrDate' v-model='model.ArrDate'>
+            </div>
+            <div class='oe-form-field'>
+                <label for='arrPoint' class='oe-label'>Arrival point</label>
+                <input type='text' id='arrPoint' class='oe-input' name='arrPoint' v-model='model.ArrPoint'>
+            </div>
+
+            <div class='oe-form-field oe-form-field--full'>
+                <label for='products' class='oe-label'>Products</label>
+                <input type='text' id='products' class='oe-input' name='products' v-model='model.Products'>
+            </div>
+            <div class='oe-form-field oe-form-field--full'>
+                <label for='notes' class='oe-label'>Notes</label>
+                <input type='text' id='notes' class='oe-input' name='notes' v-model='model.Notes'>
+            </div>
+
+            <div class='oe-form-field oe-form-field--full'>
+                <button class='lf-btn' type='submit'
+                style='align-self: flex-start; margin-top: 1rem;'>
+                    Submit and save the Draft
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
 
 @section Scripts {
     <script>
@@ -150,7 +250,8 @@
             el: '#oe-app',
             data() {
                 return {
-                    showForm: false,
+                    @* showForm: false, *@
+                    showForm: true,
                     model: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model)),
                     alertText: '',
                     isDragging: false,
@@ -227,6 +328,12 @@
                         .then(data => {
                             this.model = data;
                             this.showForm = true;
+
+                            this.$nextTick(() => {
+                                document.querySelector('.oe-form-title')
+                                    .scrollIntoView({ behavior: 'smooth'});
+                            });
+
                         })
                         .catch(err => {
                             console.error(err);
