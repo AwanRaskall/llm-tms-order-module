@@ -11,5 +11,24 @@ namespace OrderModule.Web.Controllers
         {
             return View(new ViewModelSummary());
         }
+
+
+        // Working with Summary form
+        [HttpPost]
+        public virtual async Task<IActionResult> ParseSummary(IFormFile file)
+        {
+            ViewModelSummary viewModel = new ViewModelSummary()
+            {
+                
+            };
+            return Ok(viewModel);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> CreateDraft(ViewModelSummary model)
+        {
+            return RedirectToAction("Drafts");
+        }
+
     }
 }
