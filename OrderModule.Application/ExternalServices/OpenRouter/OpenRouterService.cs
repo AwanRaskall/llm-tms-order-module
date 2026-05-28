@@ -3,9 +3,11 @@ using OpenAI;
 using OpenAI.Chat;
 using OrderModule.Application.Features.OrderExtractorService.Models;
 using OrderModule.Application.Features.OrderExtractorService.Utils;
+using OrderModule.Application.Interfaces; 
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.ClientModel;
 
 
 namespace OrderModule.Application.ExternalServices.OpenRouter
@@ -14,7 +16,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
     /// Sends extraction prompts to OpenRouter API.
     /// Uses the OpenAI SDK since OpenRouter follows the same API format.
     /// </summary>
-    public class OpenRouterService
+    public class OpenRouterService: ILLMService
     {
         private OpenAIClient? _client;
         private readonly IConfiguration _configuration;
@@ -77,7 +79,11 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
 
                 string content = completion.Value.Content[0].Text;
                 string json = Normalizer.ExtractJson(content);
-                return JsonSerializer.Deserialize<ExtractedSummary>(json);
+
+                var result = JsonSerializer.Deserialize<ExtractedSummary>(json);
+                if (result == null)
+                    throw new InvalidOperationException("LLM returned a response that could not be parsed into order fields");
+                return result;
             }
             catch (Exception ex)
             {
