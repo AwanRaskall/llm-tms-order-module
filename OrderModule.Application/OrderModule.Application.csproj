@@ -4,6 +4,11 @@
     <ProjectReference Include="..\OrderModule.DataModels\OrderModule.DataModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MsgReader" Version="6.0.11" />
+    <PackageReference Include="OpenAI" Version="2.10.0" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
