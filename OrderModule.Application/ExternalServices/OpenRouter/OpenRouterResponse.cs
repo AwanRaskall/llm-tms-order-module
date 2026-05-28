@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using OrderModule.Application.Interfaces;
 
 namespace OrderModule.Application.ExternalServices.OpenRouter
 {
@@ -8,7 +9,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
     /// Example response structure:
     ///     "choices": [{ "message": { "role": "assistant", "content": "..." } }]
     /// </summary>
-    public class OpenRouterResponse
+    public class OpenRouterResponse: IModelResponse
     {
         public string Id { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
