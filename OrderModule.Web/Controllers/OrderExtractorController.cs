@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderModule.Web.Models;
-using OrderModule.Application.OrderExtractorService;
-using OrderModule.Application.OrderExtractorService.Models;
-using OrderModule.Application.OrderExtractorService.Utils;
+using OrderModule.Application.Features.OrderExtractorService;
+using OrderModule.Application.Features.OrderExtractorService.Models;
+using OrderModule.Application.Features.OrderExtractorService.Utils;
 
 namespace OrderModule.Web.Controllers
 {
@@ -10,12 +10,15 @@ namespace OrderModule.Web.Controllers
     {
         
         private readonly MessageProcessor _messageProcessor;
+        private readonly Normalizer _normalizer;
         
         public OrderExtractorController(
-            MessageProcessor messageProcessor
+            MessageProcessor messageProcessor,
+            Normalizer normalizer
         )
         {
             _messageProcessor = messageProcessor;
+            _normalizer = normalizer;
         }
         
         public IActionResult Index()
@@ -34,12 +37,15 @@ namespace OrderModule.Web.Controllers
             using var stream = file.OpenReadStream();
             ExtractedSummary summary = await _messageProcessor.ProcessMessageAsync(stream, file.FileName);
 
+            string DepDate = _normalizer.ConvertDate(summary.DepDate);
+            string ArrDate = _normalizer.ConvertDate(summary.ArrDate);
+
             ViewModelSummary viewModel = new ViewModelSummary()
             {
                 Invoice = summary.Invoice,
-                DepDate = summary.DepDate,
+                DepDate = DepDate,
                 DepPoint = summary.DepPoint,
-                ArrDate = summary.ArrDate,
+                ArrDate = ArrDate,
                 ArrPoint = summary.ArrPoint,
                 Transport = summary.Transport,
                 Products = summary.Products,
