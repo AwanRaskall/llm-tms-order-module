@@ -30,21 +30,21 @@ namespace OrderModule.Application.Features.OrderExtractorService
             string prompt = PromptBuilder.BuildExtractionPrompt(extractedText);
             
             // the model will be taken from Configuration page
-            string modelName = "deepseek";
+            string modelName = "openrouter-free";
             
             string model;
             switch (modelName)
             {
+                case "openrouter-free":
+                    model = "openrouter/free";            // ← автовыбор лучшей бесплатной
+                    return await _openRouterService.ExtractDataFromText(model, prompt);
+                
                 case "llama4-maverick":
                     model = "meta-llama/llama-4-maverick:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
                 case "llama4-scout":
                     model = "meta-llama/llama-4-scout:free";
-                    return await _openRouterService.ExtractDataFromText(model, prompt);
-
-                case "mistral-free":
-                    model = "mistralai/mistral-7b-instruct:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
                 case "deepseek":
