@@ -250,8 +250,7 @@
             el: '#oe-app',
             data() {
                 return {
-                    @* showForm: false, *@
-                    showForm: true,
+                    showForm: false,
                     model: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model)),
                     alertText: '',
                     isDragging: false,
