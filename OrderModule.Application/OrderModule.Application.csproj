@@ -5,8 +5,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
     <PackageReference Include="MsgReader" Version="6.0.11" />
-    <PackageReference Include="OpenAI" Version="2.10.0" />
   </ItemGroup>
 
   <PropertyGroup>
