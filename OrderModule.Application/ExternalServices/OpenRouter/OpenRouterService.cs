@@ -1,13 +1,10 @@
 using Microsoft.Extensions.Configuration;
-using OpenAI;
-using OpenAI.Chat;
 using OrderModule.Application.Features.OrderExtractorService.Models;
 using OrderModule.Application.Features.OrderExtractorService.Utils;
 using OrderModule.Application.Interfaces; 
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.ClientModel;
 
 
 namespace OrderModule.Application.ExternalServices.OpenRouter
@@ -18,37 +15,19 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
     /// </summary>
     public class OpenRouterService: ILLMService
     {
-        private OpenAIClient? _client;
-        private readonly IConfiguration _configuration;
-
-        public OpenRouterService(IConfiguration configuration)
+        private readonly IHttpServiceOpenRouter _httpService;
+        private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            _configuration = configuration;
-        }
-        private OpenAIClient GetClient()
+            PropertyNameCaseInsensitive = true
+        };
+
+        public OpenRouterService(IHttpServiceOpenRouter httpService)
         {
-            if (_client != null)
-                return _client;
-
-            var apiKey = _configuration["OpenRouter:ApiKey"];
-            if (string.IsNullOrWhiteSpace(apiKey))
-                throw new InvalidOperationException("OpenRouter:ApiKey is missing in configuration");
-
-
-            // Specify the OpenRouter address instead of the default OpenAI address
-            _client = new OpenAIClient(
-                new ApiKeyCredential(apiKey),
-                new OpenAIClientOptions
-                {
-                    Endpoint = new Uri("https://openrouter.ai/api/v1")
-                }
-            );
-
-            return _client;
+            _httpService = httpService;
         }
 
         /// <summary>
-        /// Sends a prompt to the specified OpenRouter model and returns the extracted order data as ExtractedSummary.
+        /// Builds request, sends to OpenRouter and returns extracted order fields.
         /// </summary>
         public async Task<ExtractedSummary> ExtractDataFromText(
             string model,
@@ -56,40 +35,38 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
             float temperature = 0.5f,
             int max_tokens = 300)
         {
-            var client = GetClient();
-            var chatClient = client.GetChatClient(model);
-
-            ChatMessage[] messages = new ChatMessage[]
+            var request = new OpenRouterRequest
             {
-                ChatMessage.CreateSystemMessage(
-                    "Return ONLY valid JSON. No markdown. No explanations."
-                ),
-                ChatMessage.CreateUserMessage(prompt)
+                Model       = model,
+                Temperature = temperature,
+                MaxTokens   = max_tokens,
+                Messages    = new List<OpenRouterMessage>
+                {
+                    new() { Role = "system",
+                            Content = "Return ONLY valid JSON. No markdown. No explanations." },
+                    new() { Role = "user", Content = prompt }
+                }
             };
 
-            try
-            {
-                var completion = await chatClient.CompleteChatAsync(
-                    messages,
-                    new ChatCompletionOptions
-                    {
-                        Temperature = temperature
-                    }
-                );
+            var response = await _httpService.SendAsync<OpenRouterRequest, OpenRouterResponse>("chat/completions", request);
 
-                string content = completion.Value.Content[0].Text;
-                string json = Normalizer.ExtractJson(content);
+            if (response == null)
+                throw new InvalidOperationException("OpenRouter returned null response after all retry attempts.");
 
-                var result = JsonSerializer.Deserialize<ExtractedSummary>(json);
-                if (result == null)
-                    throw new InvalidOperationException("LLM returned a response that could not be parsed into order fields");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                throw;
-            }
+
+            var textContent   = response?.GetContent() ?? string.Empty;
+
+            // Console.WriteLine("-- GetContent() result --");
+            // Console.WriteLine(textContent);
+            // Console.WriteLine("-- End content --");
+            
+            var extractedJson = Normalizer.ExtractJson(textContent);
+            var result = JsonSerializer.Deserialize<ExtractedSummary>(extractedJson, JsonOptions);
+
+            if (result == null)
+                throw new InvalidOperationException("LLM returned a response that could not be parsed into order fields.");
+
+            return result;
         }
     }
 }
