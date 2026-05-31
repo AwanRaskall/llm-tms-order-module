@@ -53,7 +53,7 @@ namespace OrderModule.Application.Features.OrderExtractorService.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Errore Normalizer: ExtractJson: {ex.Message}");
+                Console.WriteLine($"Error Normalizer: ExtractJson: {ex.Message}");
                 throw;
             }
 
