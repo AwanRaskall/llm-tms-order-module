@@ -1,7 +1,28 @@
+using OrderModule.Application.Features.OrderExtractorService;
+using OrderModule.Application.ExternalServices.OpenRouter;
+using OrderModule.Application.Interfaces;
+using OrderModule.Application.Features.OrderExtractorService.Utils;
+
+// Register Windows encodings (needed for MsgReader and .msg files)
+System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Disable camelCase - leave PascalCase as in C# models
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+
+// OrderExtractor Services
+builder.Services.AddScoped<MessageProcessor>();
+builder.Services.AddScoped<OpenRouterService>();
+builder.Services.AddScoped<IHttpServiceOpenRouter, HttpServiceOpenRouter>();
+builder.Services.AddScoped<Normalizer>();
+
 
 var app = builder.Build();
 
