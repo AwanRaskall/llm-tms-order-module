@@ -1,0 +1,347 @@
+@model OrderModule.Web.Models.ViewModelSummary;
+
+@{
+    ViewData["Title"] = "Order Extractor";
+}
+
+@section Styles {
+    <style>
+        
+        @* -- Upload Zone -- *@
+        .oe-upload-zone {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            padding-top: .5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #drop_zone {
+            display: flex;
+            width: 400px;
+            min-width: 30%;
+            min-height: 170px;
+            background: var(--lf-lavender);
+            border-radius: 8px;
+            border: 2px dashed rgba(62, 95, 68, 0.4);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+            transition: border-color .2s, background .2s;
+        }
+
+        #drop_zone:hover {
+            border-color: var(--lf-green);
+            background: rgba(62, 95, 68, 0.06);
+        }
+
+        #drop_zone label {
+            text-align: center;
+            width: 100%;
+        }
+
+        .oe-drop-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--lf-text-muted);
+        }
+
+        .oe-drop-label i {
+            color: var(--lf-green);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        #file_input {
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            position: absolute;
+            overflow: hidden;
+        }
+
+        .oe-file-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 170px;
+        }
+
+        .oe-file-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start; 
+        }
+
+        .oe-alert {
+            color: #c0392b;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        
+        @* -- Form -- *@
+        .oe-form-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--lf-text);
+            margin-bottom: 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 1.5px solid var(--lf-border);
+            overflow: visible;
+        }
+
+        .oe-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 0;
+        }
+
+        .oe-form-field {
+            padding: .5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-sizing: border-box;
+        }
+
+        .oe-form-field--full {
+            grid-column: 1 / -1;
+        }
+
+        .oe-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--lf-text);
+        }
+
+        .oe-input {
+            border-radius: 6px;
+            border: 1.5px solid rgba(62, 95, 68, 0.25);
+            padding: .4rem .6rem;
+            font-size: 14px;
+            font-family: var(--font-body);
+            color: var(--lf-text);
+            background: #fff;
+            width: 100%;
+            transition: border-color .15s;
+        }
+
+        .oe-input:focus {
+            outline: none;
+            border-color: var(--lf-green);
+            box-shadow: 0 0 0 3px rgba(62, 95, 68, 0.1);
+        }
+
+    </style>
+}
+
+<div id='oe-app' class='lf-page'>
+
+    @* -- Title og the page -- *@
+    <h1 class='lf-page-title'>Order Extractor</h1>
+    <p class='lf-page-subtitle'>
+        Here you can upload your email message, and the AI tool will automatically
+        extract all relevant operational data contained within it.
+    </p>
+
+    @* -- File upload area -- *@
+    <div class='oe-upload-zone'>
+
+        <div id='drop_zone'
+        v-on:dragover='handleDragover'
+        v-on:drop='handleDrop'
+        v-on:dragleave='dragleave'>
+
+            <label for='file_input' style='cursor: pointer;'>
+                <div v-if='isDragging'>Release to drop files here</div>
+                <div class='oe-drop-label' v-else>
+                    <i class='ti ti-file-upload' aria-hidden='true'></i>
+                    <span>Drag your file here, or <u>click</u> for file selection</span>
+                </div>
+            </label>
+            <input type='file' id='file_input' name='file' ref='file' v-on:change='onChange' />
+        </div>
+
+        <div class='oe-file-info'>
+            <div>
+                <p>
+                    <strong>Name of the file: </strong>
+                    <span v-if='file'>{{file.name}}</span>
+                </p>
+                <p>
+                    <strong>Size of the file: </strong>
+                    <span v-if='file'>{{Math.round(file.size / 1024) + ' KB'}}</span>
+                </p>
+            </div>
+
+            <div class='oe-file-actions'>
+                <p class='oe-alert'>{{alertText}}</p>
+                <button class='lf-btn' type='button' v-on:click='submitFile'>
+                    Extract the data
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+
+    @* -- 8-Field form (appears after extraction) -- *@
+    <div v-if='showForm'>
+        <h4 class='oe-form-title'>File Insight:</h4>
+
+        <form class='oe-form-grid' action='@Url.Action("CreateDraft", "OrderExtractor")' method='post'>
+            <div class='oe-form-field'>
+                <label for='invoice' class='oe-label'>Company Invoice</label>
+                <input type='text' id='invoice' class='oe-input' name='invoice' v-model='model.Invoice'>
+            </div>
+            <div class='oe-form-field'>
+                <label for='transport' class='oe-label'>Transport</label>
+                <input type='text' id='transport' class='oe-input' name='transport' v-model='model.Transport'>
+            </div>
+
+            <div class='oe-form-field'>
+                <label for='depDate' class='oe-label'>Departure date</label>
+                <input type='date' id='depDate' class='oe-input' name='depDate' v-model='model.DepDate'>
+            </div>
+            <div class='oe-form-field'>
+                <label for='depPoint' class='oe-label'>Departure point</label>
+                <input type='text' id='depPoint' class='oe-input' name='depPoint' v-model='model.DepPoint'>
+            </div>
+
+            <div class='oe-form-field'>
+                <label for='arrDate' class='oe-label'>Arrival date</label>
+                <input type='date' id='arrDate' class='oe-input' name='arrDate' v-model='model.ArrDate'>
+            </div>
+            <div class='oe-form-field'>
+                <label for='arrPoint' class='oe-label'>Arrival point</label>
+                <input type='text' id='arrPoint' class='oe-input' name='arrPoint' v-model='model.ArrPoint'>
+            </div>
+
+            <div class='oe-form-field oe-form-field--full'>
+                <label for='products' class='oe-label'>Products</label>
+                <input type='text' id='products' class='oe-input' name='products' v-model='model.Products'>
+            </div>
+            <div class='oe-form-field oe-form-field--full'>
+                <label for='notes' class='oe-label'>Notes</label>
+                <input type='text' id='notes' class='oe-input' name='notes' v-model='model.Notes'>
+            </div>
+
+            <div class='oe-form-field oe-form-field--full'>
+                <button class='lf-btn' type='submit'
+                style='align-self: flex-start; margin-top: 1rem;'>
+                    Submit and save the Draft
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+       var url = '@Url.Action("ParseSummary", "OrderExtractor")';
+
+        new Vue({
+            el: '#oe-app',
+            data() {
+                return {
+                    showForm: false,
+                    model: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model)),
+                    alertText: '',
+                    isDragging: false,
+                    file: null,
+                };
+            },
+
+            mounted() {
+                // Prevent the browser behavior
+                document.addEventListener('dragover', this._preventDefaults, false);
+                document.addEventListener('drop', this._preventDefaults, false);
+            },
+
+            beforeDestroy() {
+                document.removeEventListener('dragover', this._preventDefaults, false);
+                document.removeEventListener('drop', this._preventDefaults, false);
+            },
+
+            methods: {
+                // Prevent openning a file in new tab of browser
+                _preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                },
+
+                // Drag and drop zone
+                onChange() {
+                    this.file = this.$refs.file.files[0] || null;
+                    this.alertText = '';
+                },
+
+                handleDragover() {
+                    this.isDragging = true;
+                },
+
+                dragleave() {
+                    this.isDragging = false;
+                },
+
+                handleDrop(e) {
+                    const droppedFile = e.dataTransfer.files[0];
+                    if (droppedFile) {
+                        this.file = droppedFile;
+                    }
+                    this.isDragging = false;
+                    this.alertText = '';
+                },
+
+                // Extract the data button
+                submitFile() {
+                    this.alertText = '';
+
+                    if (!this.file) {
+                        this.alertText = 'Please upload a file';
+                        this.showForm = false;
+                        return;
+                    }
+
+                    const format = ['eml', 'msg'];
+                    const extension = this.file.name.split('.').pop().toLowerCase();
+
+                    if (!format.includes(extension)) {
+                        this.alertText = 'Unsupported file format. Please upload .eml or .msg format';
+                        this.showForm = false;
+                        this.file = null;
+                        this.$refs.file.value = '';
+                    } else {
+                        let formData = new FormData();
+                        formData.append('file', this.file);
+
+                        fetch(url, { method: 'POST', body: formData })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.model = data;
+                            this.showForm = true;
+
+                            this.$nextTick(() => {
+                                document.querySelector('.oe-form-title')
+                                    .scrollIntoView({ behavior: 'smooth'});
+                            });
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            this.alertText = 'An error during the process occurred. Please try again later';
+                        });
+                    }
+                }
+            }
+        });
+ 
+    </script>
+}
