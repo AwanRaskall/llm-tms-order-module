@@ -1,0 +1,293 @@
+@model OrderModule.Web.Models.ConfigViewModel
+
+@{
+    ViewData["Title"] = "Configuration";
+}
+
+@section Styles {
+    <style>
+        @* Service list *@
+        .cfg-section {
+            background: var(--lf-white);
+            border: 0.5px solid var(--lf-border);
+            border-radius: 10px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+        }
+
+        .cfg-section-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--lf-text-muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 16px;
+        }
+
+        .cfg-service-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .cfg-service-btn {
+            flex: 1;
+            padding: 14px;
+            border: 1.5px solid var(--lf-border);
+            border-radius: 8px;
+            background: var(--lf-white);
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-family: var(--font-body);
+            color: var(--lf-text);
+            transition: border-color .15s, background .15s;
+        }
+
+        .cfg-service-btn:hover {
+            border-color: var(--lf-green);
+        }
+
+        .cfg-service-btn.active {
+            border-color: var(--lf-green);
+            background: var(--lf-lavender);
+            color: var(--lf-green);
+            font-weight: 600;
+        }
+
+        @* Model list *@
+        .cfg-model-group {
+            margin-bottom: 8px;
+        }
+
+        .cfg-model-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--lf-text-muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cfg-model-label i {
+            font-size: 14px;
+            color: var(--lf-green);
+        }
+
+        .cfg-model-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cfg-model-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1.5px solid var(--lf-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color .15s, opacity .15s;
+        }
+
+        .cfg-model-item:hover:not(.disabled) {
+            border-color: var(--lf-green);
+        }
+
+        .cfg-model-item.selected {
+            border-color: var(--lf-green);
+            background: var(--lf-lavender);
+        }
+
+        .cfg-model-item.disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .cfg-model-radio {
+            accent-color: var(--lf-green);
+            width: 16px;
+            height: 16px;
+        }
+
+        .cfg-model-name {
+            font-size: 14px;
+            color: var(--lf-text);
+            font-weight: 500;
+        }
+
+        .cfg-model-desc {
+            font-size: 12px;
+            color: var(--lf-text-muted);
+            margin-left: auto;
+        }
+
+        .cfg-divider {
+            border: none;
+            border-top: 1px solid var(--lf-border);
+            margin: 20px 0;
+        }
+    </style>
+}
+
+<div id='cfg-app' class='lf-page'>
+    <h1 class='lf-page-title'>Configuration</h1>
+    <p class='lf-page-subtitle'>
+        Select the LLM service and model used for extracting transport order data
+    </p>
+
+    <form method='post' action='@Url.Action("Index", "Configuration")'>
+        @* -- Service Preference -- *@
+        <div class='cfg-section'>
+            <div class='cfg-section-title'>Service preference</div>
+            <p style='font-size:13px; color:var(--lf-text-muted); margin-bottom:14px;'>
+                Selecting a service disables models from the other provider.
+                Leave empty to choose any model freely.
+            </p>
+            
+            <div class='cfg-service-group'>
+                <button type='button'
+                        class='cfg-service-btn'
+                        v-bind:class='{ active: selectedService === "" }'
+                        v-on:click='selectedService = ""'>
+                    No preference
+                </button>
+                <button type='button'
+                        class='cfg-service-btn'
+                        v-bind:class='{ active: selectedService === "ollama" }'
+                        v-on:click='selectedService = "ollama"'>
+                    Ollama (local)
+                </button>
+                <button type='button'
+                        class='cfg-service-btn'
+                        v-bind:class='{ active: selectedService === "openrouter" }'
+                        v-on:click='selectedService = "openrouter"'>
+                    OpenRouter (cloud)
+                </button>
+            </div>
+            <input type='hidden' name='SelectedService' v-bind:value='selectedService' />
+        </div>
+
+
+        @* -- Model selection -- *@
+        <div class='cfg-section'>
+            <div class='cfg-section-title'>LLM Model</div>
+
+            @* OpenRouter models *@
+            <div class='cfg-model-group'>
+                <div class='cfg-model-label'>
+                    <i class='ti ti-cloud' aria-hidden='true'></i>
+                    OpenRouter - cloud models
+                </div>
+                
+                <div class='cfg-model-list'>
+                    <label class='cfg-model-item' :class='modelClass("openrouter-free", "ollama")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='openrouter-free'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "ollama"' />
+                        <span class='cfg-model-name'>Auto (best available)</span>
+                        <span class='cfg-model-desc'>openrouter/free</span>
+                    </label>
+                    <label class='cfg-model-item' :class='modelClass("llama4-maverick", "ollama")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='llama4-maverick'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "ollama"' />
+                        <span class='cfg-model-name'>Llama 4 Maverick</span>
+                        <span class='cfg-model-desc'>meta-llama/llama-4-maverick:free</span>
+                    </label>
+                    <label class='cfg-model-item' :class='modelClass("deepseek", "ollama")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='deepseek'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "ollama"' />
+                        <span class='cfg-model-name'>DeepSeek R1</span>
+                        <span class='cfg-model-desc'>deepseek/deepseek-r1:free</span>
+                    </label>
+                    <label class='cfg-model-item' :class='modelClass("nemotron", "ollama")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='nemotron'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "ollama"' />
+                        <span class='cfg-model-name'>NVIDIA Nemotron</span>
+                        <span class='cfg-model-desc'>nvidia/nemotron-3-super-120b-a12b:free</span>
+                    </label>
+
+                </div>
+            </div>
+
+            <hr class='cfg-divider' />
+
+            @* Ollama models *@
+            <div class='cfg-model-group'>
+                <div class='cfg-model-label'>
+                    <i class='ti ti-cpu' aria-hidden='true'></i>
+                    Ollama - local models
+                </div>
+                
+                <div class='cfg-model-list'>
+                    <label class='cfg-model-item' :class='modelClass("gemma", "openrouter")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='gemma'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "openrouter"' />
+                        <span class='cfg-model-name'>Gemma 3</span>
+                        <span class='cfg-model-desc'>gemma3:12b-it-qat</span>
+                    </label>
+                    <label class='cfg-model-item' :class='modelClass("mistral", "openrouter")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='mistral'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "openrouter"' />
+                        <span class='cfg-model-name'>Mistral 7B</span>
+                        <span class='cfg-model-desc'>mistral:7b</span>
+                    </label>
+                    <label class='cfg-model-item' :class='modelClass("llama", "openrouter")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='llama'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "openrouter"' />
+                        <span class='cfg-model-name'>Llama 3.2 Vision</span>
+                        <span class='cfg-model-desc'>llama3.2-vision:latest</span>
+                    </label>
+
+                </div>
+            </div>
+        </div>
+
+        @* Save button *@
+        <button class='lf-btn' type='submit'>
+            Save configuration
+        </button>
+
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        new Vue({
+            el: '#cfg-app',
+            data() {
+                return {
+                    selectedModel:   '@Model.SelectedModel',
+                    selectedService: '@Model.SelectedService'
+                };
+            },
+            methods: {
+                // disableWhenService - selecting which the model is not available
+                modelClass(modelKey, disableWhenService) {
+                    return {
+                        selected: this.selectedModel === modelKey,
+                        disabled: this.selectedService === disableWhenService
+                    };
+                }
+            }
+        });
+    </script>
+}
