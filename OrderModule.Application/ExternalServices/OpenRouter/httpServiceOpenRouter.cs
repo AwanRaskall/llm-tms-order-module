@@ -126,6 +126,12 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
                             response.StatusCode, 
                             attempt, 
                             errorBody);
+
+                        // Error 404 - the model is unavailable
+                        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                            throw new HttpRequestException(
+                                $"OpenRouter model not available (404). " +
+                                $"Please select a different model in Configuration. Details: {errorBody}");
                     }
 
                     var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

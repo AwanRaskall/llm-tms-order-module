@@ -5,7 +5,7 @@ using OrderModule.Application.Features.OrderExtractorService.Models;
 using OrderModule.Application.Features.OrderExtractorService.Utils;
 using OrderModule.Application.DomainServices.EmailExtraction.Services;
 using OrderModule.Application.ExternalServices.OpenRouter;
-
+using OrderModule.Application.Features.Configuration;
 
 namespace OrderModule.Application.Features.OrderExtractorService
 {
@@ -17,10 +17,14 @@ namespace OrderModule.Application.Features.OrderExtractorService
     public class MessageProcessor
     {
         private readonly OpenRouterService _openRouterService;
+        private readonly ConfigurationReadService _configReadService;
 
-        public MessageProcessor(OpenRouterService openRouterService)
+        public MessageProcessor(
+            OpenRouterService openRouterService,
+            ConfigurationReadService configReadService)
         {
             _openRouterService = openRouterService;
+            _configReadService = configReadService;
         }
 
         public async Task<ExtractedSummary> ProcessMessageAsync(Stream fileStream, string fileName)
@@ -30,28 +34,28 @@ namespace OrderModule.Application.Features.OrderExtractorService
             string prompt = PromptBuilder.BuildExtractionPrompt(extractedText);
             
             // the model will be taken from Configuration page
-            string modelName = "openrouter-free";
+            string modelName = _configReadService.GetConfiguration().SelectedModel;
             
             string model;
             switch (modelName)
             {
                 case "openrouter-free":
-                    model = "openrouter/free";            // ← автовыбор лучшей бесплатной
+                    model = "openrouter/free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
                 
-                case "llama4-maverick":
-                    model = "meta-llama/llama-4-maverick:free";
+                case "gpt-oss-120b":
+                    model = "openai/gpt-oss-120b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
-                case "llama4-scout":
-                    model = "meta-llama/llama-4-scout:free";
+                case "gpt-oss-20b":
+                    model = "openai/gpt-oss-20b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
-                case "deepseek":
-                    model = "deepseek/deepseek-r1:free";
+                case "gemma-4-26b-a4b-it":
+                    model = "google/gemma-4-26b-a4b-it:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
-                case "nemotron":
+                case "nemotron3":
                     model = "nvidia/nemotron-3-super-120b-a12b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 

@@ -2,6 +2,11 @@ using OrderModule.Application.Features.OrderExtractorService;
 using OrderModule.Application.ExternalServices.OpenRouter;
 using OrderModule.Application.Interfaces;
 using OrderModule.Application.Features.OrderExtractorService.Utils;
+using OrderModule.RavenDB.Connection;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
+using OrderModule.Application.Features.Configuration;
+
 
 // Register Windows encodings (needed for MsgReader and .msg files)
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -9,7 +14,8 @@ System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Inst
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// -- MVC + JSON settings --
+// PropertyNamingPolicy = null -> PascalCase is in JSON answers
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
@@ -24,7 +30,26 @@ builder.Services.AddScoped<IHttpServiceOpenRouter, HttpServiceOpenRouter>();
 builder.Services.AddScoped<Normalizer>();
 
 
+// -- RavenDB --
+// Singleton: one DocumentStore for the entire duration of the application
+builder.Services.AddSingleton<IDocumentStore>(
+    _ => RavenDbStore.Initialize(builder.Configuration));
+
+// Scoped: a new session for each HTTP request
+builder.Services.AddScoped<IDocumentSession>(sp =>
+    sp.GetRequiredService<IDocumentStore>().OpenSession());
+
+// -- Configuration page services --
+builder.Services.AddScoped<ConfigurationReadService>();
+builder.Services.AddScoped<ConfigurationService>();
+
+
 var app = builder.Build();
+
+// Initialize RavenDB at startup, not on the first request. 
+// Now the delay will occur only when the application starts (once),
+// rather than each time the user navigates to the Config page.
+_ = app.Services.GetRequiredService<IDocumentStore>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -36,9 +61,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
