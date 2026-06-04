@@ -5,7 +5,7 @@ using OrderModule.Application.Features.OrderExtractorService.Models;
 using OrderModule.Application.Features.OrderExtractorService.Utils;
 using OrderModule.Application.DomainServices.EmailExtraction.Services;
 using OrderModule.Application.ExternalServices.OpenRouter;
-
+using OrderModule.Application.Features.Configuration;
 
 namespace OrderModule.Application.Features.OrderExtractorService
 {
@@ -17,10 +17,14 @@ namespace OrderModule.Application.Features.OrderExtractorService
     public class MessageProcessor
     {
         private readonly OpenRouterService _openRouterService;
+        private readonly ConfigurationReadService _configReadService;
 
-        public MessageProcessor(OpenRouterService openRouterService)
+        public MessageProcessor(
+            OpenRouterService openRouterService,
+            ConfigurationReadService configReadService)
         {
             _openRouterService = openRouterService;
+            _configReadService = configReadService;
         }
 
         public async Task<ExtractedSummary> ProcessMessageAsync(Stream fileStream, string fileName)
@@ -30,7 +34,7 @@ namespace OrderModule.Application.Features.OrderExtractorService
             string prompt = PromptBuilder.BuildExtractionPrompt(extractedText);
             
             // the model will be taken from Configuration page
-            string modelName = "openrouter-free";
+            string modelName = _configReadService.GetConfiguration().SelectedModel;
             
             string model;
             switch (modelName)
