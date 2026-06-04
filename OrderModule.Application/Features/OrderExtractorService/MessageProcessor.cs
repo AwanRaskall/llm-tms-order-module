@@ -40,22 +40,22 @@ namespace OrderModule.Application.Features.OrderExtractorService
             switch (modelName)
             {
                 case "openrouter-free":
-                    model = "openrouter/free";            // ← автовыбор лучшей бесплатной
+                    model = "openrouter/free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
                 
-                case "llama4-maverick":
-                    model = "meta-llama/llama-4-maverick:free";
+                case "gpt-oss-120b":
+                    model = "openai/gpt-oss-120b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
-                case "llama4-scout":
-                    model = "meta-llama/llama-4-scout:free";
+                case "gpt-oss-20b":
+                    model = "openai/gpt-oss-20b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
-                case "deepseek":
-                    model = "deepseek/deepseek-r1:free";
+                case "gemma-4-26b-a4b-it":
+                    model = "google/gemma-4-26b-a4b-it:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 
-                case "nemotron":
+                case "nemotron3":
                     model = "nvidia/nemotron-3-super-120b-a12b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
 

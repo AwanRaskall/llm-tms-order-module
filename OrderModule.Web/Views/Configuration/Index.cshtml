@@ -194,28 +194,36 @@
                         <span class='cfg-model-name'>Auto (best available)</span>
                         <span class='cfg-model-desc'>openrouter/free</span>
                     </label>
-                    <label class='cfg-model-item' :class='modelClass("llama4-maverick", "ollama")'>
+                    <label class='cfg-model-item' :class='modelClass("gpt-oss-120b", "ollama")'>
                         <input type='radio' class='cfg-model-radio'
-                               name='SelectedModel' value='llama4-maverick'
+                               name='SelectedModel' value='gpt-oss-120b'
                                v-model='selectedModel'
                                v-bind:disabled='selectedService === "ollama"' />
-                        <span class='cfg-model-name'>Llama 4 Maverick</span>
-                        <span class='cfg-model-desc'>meta-llama/llama-4-maverick:free</span>
+                        <span class='cfg-model-name'>Gpt-oss-120b</span>
+                        <span class='cfg-model-desc'>openai/gpt-oss-120b:free</span>
                     </label>
-                    <label class='cfg-model-item' :class='modelClass("deepseek", "ollama")'>
+                    <label class='cfg-model-item' :class='modelClass("gpt-oss-20b", "ollama")'>
                         <input type='radio' class='cfg-model-radio'
-                               name='SelectedModel' value='deepseek'
-                               v-model='selectedModel'
-                               v-bind:disabled='selectedService === "ollama"' />
-                        <span class='cfg-model-name'>DeepSeek R1</span>
-                        <span class='cfg-model-desc'>deepseek/deepseek-r1:free</span>
+                            name='SelectedModel' value='gpt-oss-20b'
+                            v-model='selectedModel'
+                            v-bind:disabled='selectedService === "ollama"' />
+                        <span class='cfg-model-name'>Gpt-oss-20b</span>
+                        <span class='cfg-model-desc'>openai/gpt-oss-20b:free</span>
                     </label>
-                    <label class='cfg-model-item' :class='modelClass("nemotron", "ollama")'>
+                    <label class='cfg-model-item' :class='modelClass("gemma-4-26b-a4b-it", "ollama")'>
                         <input type='radio' class='cfg-model-radio'
-                               name='SelectedModel' value='nemotron'
+                               name='SelectedModel' value='gemma-4-26b-a4b-it'
                                v-model='selectedModel'
                                v-bind:disabled='selectedService === "ollama"' />
-                        <span class='cfg-model-name'>NVIDIA Nemotron</span>
+                        <span class='cfg-model-name'>Gemma-4-26b-a4b-it</span>
+                        <span class='cfg-model-desc'>google/gemma-4-26b-a4b-it:free</span>
+                    </label>
+                    <label class='cfg-model-item' :class='modelClass("nemotron3", "ollama")'>
+                        <input type='radio' class='cfg-model-radio'
+                               name='SelectedModel' value='nemotron3'
+                               v-model='selectedModel'
+                               v-bind:disabled='selectedService === "ollama"' />
+                        <span class='cfg-model-name'>NVIDIA Nemotron3</span>
                         <span class='cfg-model-desc'>nvidia/nemotron-3-super-120b-a12b:free</span>
                     </label>
 
