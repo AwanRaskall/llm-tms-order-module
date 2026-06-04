@@ -46,6 +46,11 @@ builder.Services.AddScoped<ConfigurationService>();
 
 var app = builder.Build();
 
+// Initialize RavenDB at startup, not on the first request. 
+// Now the delay will occur only when the application starts (once),
+// rather than each time the user navigates to the Config page.
+_ = app.Services.GetRequiredService<IDocumentStore>();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
