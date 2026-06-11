@@ -6,6 +6,7 @@ using OrderModule.RavenDB.Connection;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using OrderModule.Application.Features.Configuration;
+using OrderModule.Application.Features.ShipmentRequests;
 
 
 // Register Windows encodings (needed for MsgReader and .msg files)
@@ -38,6 +39,12 @@ builder.Services.AddSingleton<IDocumentStore>(
 // Scoped: a new session for each HTTP request
 builder.Services.AddScoped<IDocumentSession>(sp =>
     sp.GetRequiredService<IDocumentStore>().OpenSession());
+
+
+// -- Shipment Request services --
+builder.Services.AddScoped<ShipmentRequestService>();
+builder.Services.AddScoped<ShipmentRequestReadService>();
+
 
 // -- Configuration page services --
 builder.Services.AddScoped<ConfigurationReadService>();
