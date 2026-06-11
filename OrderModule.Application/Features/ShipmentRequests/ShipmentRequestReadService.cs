@@ -35,26 +35,42 @@ namespace OrderModule.Application.Features.ShipmentRequests
             var filtered = all.AsEnumerable();
 
             if (!string.IsNullOrEmpty(invoice))
-                filtered = filtered.Where(r => r.Invoice.Contains(invoice, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(r =>
+                    (r.Invoice ?? string.Empty)
+                        .Trim()
+                        .Contains(invoice.Trim(), StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(depPoint))
-                filtered = filtered.Where(r => r.DepPoint.Contains(depPoint, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(r =>
+                    (r.DepPoint ?? string.Empty)
+                        .Trim()
+                        .Contains(depPoint.Trim(), StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(arrPoint))
-                filtered = filtered.Where(r => r.ArrPoint.Contains(arrPoint, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(r =>
+                    (r.ArrPoint ?? string.Empty)
+                        .Trim()
+                        .Contains(arrPoint.Trim(), StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(transport))
-                filtered = filtered.Where(r => r.Transport.Contains(transport, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(r =>
+                    (r.Transport ?? string.Empty)
+                        .Trim()
+                        .Contains(transport.Trim(), StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(createdOn) &&
                 DateTime.TryParse(createdOn, out var createdOnDate))
-                filtered = filtered.Where(r => r.CreatedOn.Date == createdOnDate.Date);
+                filtered = filtered.Where(r =>
+                    r.CreatedOn.Date == createdOnDate.Date);
 
             if (!string.IsNullOrEmpty(depDate))
-                filtered = filtered.Where(r => r.DepDate == depDate);
+                filtered = filtered.Where(r =>
+                    (r.DepDate ?? string.Empty).Trim() == depDate.Trim());
 
             if (!string.IsNullOrEmpty(arrDate))
-                filtered = filtered.Where(r => r.ArrDate == arrDate);
+                filtered = filtered.Where(r =>
+                    (r.ArrDate ?? string.Empty).Trim() == arrDate.Trim());
+
 
             return filtered.ToArray();
         }
