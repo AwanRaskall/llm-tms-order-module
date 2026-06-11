@@ -28,8 +28,9 @@ namespace OrderModule.Application.Features.ShipmentRequests
             string arrDate)
         {
             var all = _session.Query<ShipmentRequest>()
-                              .OrderByDescending(x => x.CreatedOn)
-                              .ToList();
+                .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
+                .OrderByDescending(x => x.CreatedOn)
+                .ToList();
 
             var filtered = all.AsEnumerable();
 
