@@ -1,0 +1,406 @@
+@model OrderModule.Web.Models.ShipmentRequestsViewModel
+
+@{
+    ViewData["Title"] = "Shipment Requests";
+}
+
+@section Styles {
+    <style>
+        @* -- Filters bar -- *@
+        .sr-filter-form {
+            background: #fff;
+            border: 0.5px solid var(--lf-border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sr-filter-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .sr-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .sr-filter-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lf-text-muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .sr-filter-input {
+            padding: 9px 12px;
+            border: 1.5px solid rgba(62,95,68,0.25);
+            border-radius: 7px;
+            font-size: 13px;
+            font-family: var(--font-body);
+            color: var(--lf-text);
+            background: #fff;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color .15s;
+        }
+        .sr-filter-input:focus {
+            outline: none;
+            border-color: var(--lf-green);
+            box-shadow: 0 0 0 3px rgba(62,95,68,0.1);
+        }
+
+        @* -- Buttons -- *@
+        .sr-count {
+            font-size: 13px;
+            color: var(--lf-text-muted);
+            white-space: nowrap;
+        }
+
+        .lf-btn--outline {
+            background: transparent;
+            color: var(--lf-green);
+            border: 1.5px solid var(--lf-green);
+        }
+        .lf-btn--outline:hover {
+            background: var(--lf-lavender);
+        }
+
+        .sr-filter-row .lf-btn,
+        .sr-filter-row .lf-btn--outline {
+            align-self: flex-end;
+            height: 40px;
+        }
+
+
+        @* -- Table -- *@
+        .sr-table-wrap {
+            background: #fff;
+            border: 0.5px solid var(--lf-border);
+            border-radius: 10px;
+            overflow-x: auto;
+
+            width: calc(100% + 160px);
+            margin-left: -80px;
+            margin-right: -80px; 
+        }
+
+        @* Responsive: for small screens, no wider than the screen minus a small margin *@
+        @@media (max-width: 1300px) {
+            .sr-table-wrap {
+                width: var(--lf-page);
+                margin-left: 0px;
+                margin-right: 0px;
+            }
+        }
+
+        .sr-table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        .sr-table thead {
+            background: var(--lf-green);
+        }
+        .sr-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            white-space: nowrap;
+        }
+
+        .sr-table thead th,
+        .sr-table tbody td:nth-child(1), @* Created On *@
+        .sr-table tbody td:nth-child(3), @* Dep. Date *@
+        .sr-table tbody td:nth-child(5) { @* Arr. Date *@
+            white-space: nowrap;
+        }
+
+        .sr-table tbody tr {
+            border-bottom: 0.5px solid var(--lf-border);
+            transition: background .12s;
+        }
+        .sr-table tbody tr:last-child { 
+            border-bottom: none; 
+        }
+        .sr-table tbody tr:hover{ 
+            background: var(--lf-lavender); 
+        }
+
+        .sr-table tbody td {
+            padding: 12px 16px;
+            color: var(--lf-text);
+            vertical-align: middle;
+        }
+
+        @* Invoice, Products and Notes *@
+        .sr-table tbody td:nth-child(2),
+        .sr-table tbody td:nth-child(8),
+        .lf-btn.sr-table tbody td:nth-child(9) {
+            min-width: 140px;
+            max-width: 220px;
+        }
+
+        .sr-table .td-muted {
+            color: var(--lf-text-muted);
+            font-size: 13px;
+        }
+
+        .sr-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lf-green);
+        }
+
+        @* -- Button to delete -- *@
+        .sr-delete-btn {
+            background: none;
+            border: 1.5px solid rgba(192,57,43,0.3);
+            border-radius: 6px;
+            padding: 5px 10px;
+            color: #c0392b;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background .12s, border-color .12s;
+            @* display: flex; *@
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .sr-delete-btn:hover {
+            background: rgba(192,57,43,0.08);
+            border-color: #c0392b;
+        }
+
+        @* -- Empty state -- *@
+        .sr-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--lf-text-muted);
+        }
+        .sr-empty i {
+            font-size: 48px;
+            color: rgba(62,95,68,0.2);
+            margin-bottom: 12px;
+            display: block;
+        }
+        .sr-empty p { font-size: 15px; margin-bottom: 20px; }
+    </style>
+}
+
+<div class="lf-page">
+
+    @* -- Header -- *@
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h1 class="lf-page-title" style="margin-bottom:4px;">Shipment Requests</h1>
+            <p class="lf-page-subtitle" style="margin-bottom:0;">
+                All saved transport order requests extracted from email messages
+            </p>
+        </div>
+        <a href="/OrderExtractor/Index" class="lf-btn">
+            <i class="ti ti-plus" aria-hidden="true"></i>
+            New extraction
+        </a>
+    </div>
+
+    @* -- Filters bar -- *@
+    <form method="get"
+          asp-action="ShipmentRequests"
+          asp-controller="OrderExtractor"
+          class="sr-filter-form">
+
+        @* Line 1: Invoice, dep and arr points, transport *@
+        <div class="sr-filter-row">
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Invoice</label>
+                <input type="text" name="invoice"
+                    class="sr-filter-input"
+                    value="@Model.Invoice" 
+                />
+            </div>
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Departure point</label>
+                <input type="text" name="depPoint"
+                    class="sr-filter-input"
+                    value="@Model.DepPoint"
+                />
+            </div>
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Arrival point</label>
+                <input type="text" name="arrPoint"
+                    class="sr-filter-input"
+                    value="@Model.ArrPoint"
+                />
+            </div>
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Transport</label>
+                <input type="text" name="transport"
+                    class="sr-filter-input"
+                    value="@Model.Transport"
+                />
+            </div>
+        </div>
+
+        @* Line 2: Creation, Dep and Arr dates *@
+        <div class="sr-filter-row">
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Created on</label>
+                <input type="date" name="createdOn"
+                    class="sr-filter-input"
+                    value="@Model.CreatedOn"
+                />
+            </div>
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Departure date</label>
+                <input type="date" name="depDate"
+                    class="sr-filter-input"
+                    value="@Model.DepDate"
+                />
+            </div>
+            <div class="sr-filter-group">
+                <label class="sr-filter-label">Arrival date</label>
+                <input type="date" name="arrDate"
+                    class="sr-filter-input"
+                    value="@Model.ArrDate"
+                />
+            </div>
+        </div>
+
+        @* Line 3: count span and buttons *@
+        <div class="sr-filter-row">
+            <span class="sr-count">
+                @Model.Requests.Length result(s)
+            </span>
+            <a href="/OrderExtractor/ShipmentRequests" class="lf-btn lf-btn--outline">
+                Reset
+            </a>
+            <button type="submit" class="lf-btn">
+                <i class="ti ti-filter" aria-hidden="true"></i>
+                Apply
+            </button>
+        </div>
+
+    </form>
+
+    @* -- Table -- *@
+    <div class="sr-table-wrap">
+
+        @if (Model.Requests.Length > 0)
+        {
+            <table class="sr-table">
+                <thead>
+                    <tr>
+                        <th>Created On</th>
+                        <th>Invoice</th>
+                        <th>Dep. Date</th>
+                        <th>Dep. Point</th>
+                        <th>Arr. Date</th>
+                        <th>Arr. Point</th>
+                        <th>Transport</th>
+                        <th>Products</th>
+                        <th>Notes</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Requests)
+                    {
+                        <tr>
+                            <td class="td-muted">
+                                @item.CreatedOn.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Invoice))
+                                {
+                                    <span class="sr-badge">@item.Invoice</span>
+                                }
+                                else 
+                                { 
+                                    <span class="td-muted">-</span> 
+                                }
+                            </td>
+                            <td class="td-muted">
+                                @(string.IsNullOrEmpty(item.DepDate)  ? "-" : item.DepDate)
+                            </td>
+                            <td>
+                                @(string.IsNullOrEmpty(item.DepPoint) ? "-" : item.DepPoint)
+                            </td>
+                            <td class="td-muted">
+                                @(string.IsNullOrEmpty(item.ArrDate)  ? "-" : item.ArrDate)
+                            </td>
+                            <td>
+                                @(string.IsNullOrEmpty(item.ArrPoint) ? "-" : item.ArrPoint)
+                            </td>
+                            <td class="td-muted">
+                                @(string.IsNullOrEmpty(item.Transport)? "-" : item.Transport)
+                            </td>
+                            <td>
+                                @(string.IsNullOrEmpty(item.Products) ? "-" : item.Products)
+                            </td>
+                            <td class="td-muted">
+                                @(string.IsNullOrEmpty(item.Notes) ? "-" : item.Notes)
+                            </td>
+                            <td>
+                                <form method="post"
+                                    asp-action="DeleteShipmentRequest"
+                                    asp-controller="OrderExtractor"
+                                    asp-route-id="@item.Id"
+                                    style="display:inline;">
+
+                                    <button type="submit" class="sr-delete-btn">
+                                        <i class="ti ti-trash" aria-hidden="true"></i>
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="sr-empty">
+                <i class="ti ti-inbox" aria-hidden="true"></i>
+                @if (string.IsNullOrEmpty(Model.Invoice) &&
+                    string.IsNullOrEmpty(Model.DepPoint) &&
+                    string.IsNullOrEmpty(Model.ArrPoint) &&
+                    string.IsNullOrEmpty(Model.Transport) &&
+                    string.IsNullOrEmpty(Model.CreatedOn) &&
+                    string.IsNullOrEmpty(Model.DepDate)   &&
+                    string.IsNullOrEmpty(Model.ArrDate))
+                {
+                    <p>No shipment requests yet</p>
+                }
+                else
+                {
+                    <p>No results match your filters</p>
+                    <a href="/OrderExtractor/ShipmentRequests" class="lf-btn lf-btn--outline">
+                        Reset filters
+                    </a>
+                }
+            </div>
+        }
+
+    </div>
+</div>
