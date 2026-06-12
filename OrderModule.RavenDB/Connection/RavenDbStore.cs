@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Raven.Client.Documents;
 using System.Security.Cryptography.X509Certificates;
+using OrderModule.RavenDB.Indexes;
+using Raven.Client.Documents.Indexes;
 
 namespace OrderModule.RavenDB.Connection
 {
@@ -49,6 +51,11 @@ namespace OrderModule.RavenDB.Connection
 
                 store.Initialize();
                 _store = store;
+
+                // Deploy all indexes from this project to RavenDB
+                // Executed once at application startup
+                IndexCreation.CreateIndexes( typeof(ShipmentRequests_ByFilters).Assembly, _store);
+
             }
             return _store;
         }
