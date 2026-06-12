@@ -18,13 +18,16 @@ namespace OrderModule.Application.Features.OrderExtractorService
     {
         private readonly OpenRouterService _openRouterService;
         private readonly ConfigurationReadService _configReadService;
+        private readonly OllamaService _ollamaService;
 
         public MessageProcessor(
             OpenRouterService openRouterService,
-            ConfigurationReadService configReadService)
+            ConfigurationReadService configReadService,
+            OllamaService ollamaService)
         {
             _openRouterService = openRouterService;
             _configReadService = configReadService;
+            _ollamaService = ollamaService;
         }
 
         public async Task<ExtractedSummary> ProcessMessageAsync(Stream fileStream, string fileName)
@@ -39,6 +42,7 @@ namespace OrderModule.Application.Features.OrderExtractorService
             string model;
             switch (modelName)
             {
+                // Cloud OpenRouter models
                 case "openrouter-free":
                     model = "openrouter/free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
@@ -58,6 +62,19 @@ namespace OrderModule.Application.Features.OrderExtractorService
                 case "nemotron3":
                     model = "nvidia/nemotron-3-super-120b-a12b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
+
+                // local Ollama models
+                case "mistral":
+                    model = "mistral:7b";
+                    return await _ollamaService.ExtractDataFromText(model, prompt);
+
+                case "llama":
+                    model = "llama3.2:3b";
+                    return await _ollamaService.ExtractDataFromText(model, prompt);
+
+                case "granite":
+                    model = "granite3.2:2b";
+                    return await _ollamaService.ExtractDataFromText(model, prompt);
 
                 default:
                     throw new NotSupportedException("Model is not supported");
