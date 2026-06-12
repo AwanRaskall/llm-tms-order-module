@@ -7,7 +7,7 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using OrderModule.Application.Features.Configuration;
 using OrderModule.Application.Features.ShipmentRequests;
-
+using OrderModule.Application.DomainServices.EmailExtraction.Services;
 
 // Register Windows encodings (needed for MsgReader and .msg files)
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -26,10 +26,13 @@ builder.Services.AddControllersWithViews()
 
 // OrderExtractor Services
 builder.Services.AddScoped<MessageProcessor>();
-builder.Services.AddScoped<OpenRouterService>();
-builder.Services.AddScoped<IHttpServiceOpenRouter, HttpServiceOpenRouter>();
 builder.Services.AddScoped<Normalizer>();
 
+// LLM models services
+builder.Services.AddScoped<OpenRouterService>();
+builder.Services.AddScoped<IHttpServiceOpenRouter, HttpServiceOpenRouter>();
+builder.Services.AddScoped<IHttpServiceOllama, HttpServiceOllama>();
+builder.Services.AddScoped<OllamaService>();
 
 // -- RavenDB --
 // Singleton: one DocumentStore for the entire duration of the application
