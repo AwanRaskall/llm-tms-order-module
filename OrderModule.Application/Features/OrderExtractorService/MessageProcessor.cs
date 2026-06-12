@@ -69,7 +69,7 @@ namespace OrderModule.Application.Features.OrderExtractorService
                     return await _ollamaService.ExtractDataFromText(model, prompt);
 
                 case "llama":
-                    model = "llama3.2:3b";
+                    model = "llama3.2:2b";
                     return await _ollamaService.ExtractDataFromText(model, prompt);
 
                 case "granite":
