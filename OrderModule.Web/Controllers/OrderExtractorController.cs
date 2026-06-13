@@ -81,7 +81,7 @@ namespace OrderModule.Web.Controllers
                 model.Products,
                 model.Notes);
 
-            return RedirectToAction("ShipmentRequests");
+            return Ok(new { success = true });
         }
 
 
