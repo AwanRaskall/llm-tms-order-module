@@ -36,8 +36,11 @@ namespace OrderModule.Application.DomainServices.EmailExtraction.Services
             {
                 model,
                 prompt,
-                temperature,
-                max_tokens,
+                options = new
+                {
+                    temperature,
+                    num_predict = max_tokens
+                },
                 stream = false
             };
 
