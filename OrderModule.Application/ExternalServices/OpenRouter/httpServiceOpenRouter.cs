@@ -62,14 +62,16 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
                     _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
                     if (_client.DefaultRequestHeaders.Authorization == null)
                     {
-                        Console.WriteLine("Authorization header is NOT set");
+                        _logger.LogWarning("OpenRouter Authorization header is NOT set");
                     }
                     else
                     {
-                        Console.WriteLine("Authorization header IS set");
-                        Console.WriteLine("Scheme: " + _client.DefaultRequestHeaders.Authorization.Scheme);
-                        Console.WriteLine("Has parameter: " +
-                            (!string.IsNullOrEmpty(_client.DefaultRequestHeaders.Authorization.Parameter)));
+                        _logger.LogDebug(
+                            "OpenRouter Authorization configured. Scheme: {Scheme}, HasParameter: {HasParameter}",
+                            _client.DefaultRequestHeaders.Authorization.Scheme,
+                            !string.IsNullOrEmpty(_client.DefaultRequestHeaders.Authorization.Parameter)
+                        );
+                    
                     }
 
                     // Optional attribution
