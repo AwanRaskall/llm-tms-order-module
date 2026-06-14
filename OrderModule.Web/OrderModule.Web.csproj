@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderModule.Application\OrderModule.Application.csproj" />
-    <ProjectReference Include="..\OrderModule.DataModels\OrderModule.DataModels.csproj" />
     <ProjectReference Include="..\OrderModule.RavenDB\OrderModule.RavenDB.csproj" />
   </ItemGroup>
 
