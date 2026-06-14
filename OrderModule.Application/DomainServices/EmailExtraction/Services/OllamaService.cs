@@ -51,8 +51,7 @@ namespace OrderModule.Application.DomainServices.EmailExtraction.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"OllamaService error: {ex.Message}");
-                response = new OllamaResponse();
+                throw new InvalidOperationException($"Ollama request failed: {ex.Message}", ex);
             }
 
             string content = response.GetContent();
