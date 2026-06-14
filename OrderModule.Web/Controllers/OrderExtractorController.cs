@@ -61,12 +61,6 @@ namespace OrderModule.Web.Controllers
             return Ok(viewModel);
         }
 
-        // [HttpPost]
-        // public virtual async Task<IActionResult> CreateDraft(ViewModelSummary model)
-        // {
-        //     return RedirectToAction("Drafts");
-        // }
-
         // Saves the record and goes to Shipment Requests page
         [HttpPost]
         public IActionResult CreateDraft(ViewModelSummary model)
