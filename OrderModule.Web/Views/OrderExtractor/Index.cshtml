@@ -82,6 +82,20 @@
             min-height: 20px;
         }
 
+        @* -- spinner -- *@
+        .oe-spinner {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid rgba(62,95,68,0.2);
+            border-top-color: var(--lf-green);
+            border-radius: 50%;
+            animation: oe-spin 0.75s linear infinite;
+        }
+
+        @@keyframes oe-spin {
+            to { transform: rotate(360deg); }
+        }
         
         @* -- Form -- *@
         .oe-form-title {
@@ -181,9 +195,12 @@
 
             <div class='oe-file-actions'>
                 <p class='oe-alert'>{{alertText}}</p>
-                <button class='lf-btn' type='button' v-on:click='submitFile'>
-                    Extract the data
-                </button>
+                <div style='display:flex; align-items:center; gap:12px;'>
+                    <button class='lf-btn' type='button' v-on:click='submitFile' v-bind:disabled='isLoading'>
+                        Extract the data
+                    </button>
+                    <span v-if='isLoading' class='oe-spinner' aria-label='Loading'></span>
+                </div>
             </div>
         </div>
 
@@ -232,10 +249,17 @@
             </div>
 
             <div class='oe-form-field oe-form-field--full'>
-                <button class='lf-btn' type='submit'
-                style='align-self: flex-start; margin-top: 1rem;'>
-                    Submit and save the Draft
-                </button>
+                <div style='display:flex; gap:12px; margin-top:1rem;'>
+                    <button class='lf-btn' type='button' v-on:click='saveDraft'>
+                        Submit and save the Request
+                    </button>
+                    <a href='/OrderExtractor/ShipmentRequests' class='lf-btn lf-btn--outline'>
+                        Go to Shipment Requests
+                    </a>
+                </div>
+                <p v-if='notificationText' style='color:var(--lf-green); font-size:14px; font-weight:600; margin-bottom:8px;'>
+                    {{notificationText}}
+                </p>
             </div>
         </form>
     </div>
@@ -244,7 +268,8 @@
 
 @section Scripts {
     <script>
-       var url = '@Url.Action("ParseSummary", "OrderExtractor")';
+        var url = '@Url.Action("ParseSummary", "OrderExtractor")';
+        var saveUrl = '@Url.Action("CreateDraft", "OrderExtractor")';
 
         new Vue({
             el: '#oe-app',
@@ -255,6 +280,8 @@
                     alertText: '',
                     isDragging: false,
                     file: null,
+                    isLoading: false,
+                    notificationText: '',
                 };
             },
 
@@ -303,6 +330,7 @@
                 // Extract the data button
                 submitFile() {
                     this.alertText = '';
+                    this.notificationText = '';
 
                     if (!this.file) {
                         this.alertText = 'Please upload a file';
@@ -322,10 +350,13 @@
                         let formData = new FormData();
                         formData.append('file', this.file);
 
+                        this.isLoading = true;
+
                         fetch(url, { method: 'POST', body: formData })
                         .then(response => response.json())
                         .then(data => {
                             this.model = data;
+                            this.isLoading = false;
                             this.showForm = true;
 
                             this.$nextTick(() => {
@@ -336,9 +367,25 @@
                         })
                         .catch(err => {
                             console.error(err);
+                            this.isLoading = false;
                             this.alertText = 'An error during the process occurred. Please try again later';
                         });
                     }
+                },
+
+                // Save the request and show the notification
+                saveDraft() {
+                    const formData = new FormData(this.$el.querySelector('form'));
+
+                    fetch(saveUrl, { method: 'POST', body: formData }) 
+                    .then(response => {
+                        if (response.ok) {
+                            this.notificationText = 'Shipment request saved';
+                        } else {
+                            console.error('Save failed with status:', response.status);
+                        }
+                    })
+                    .catch(err => console.error('Save error:', err));
                 }
             }
         });

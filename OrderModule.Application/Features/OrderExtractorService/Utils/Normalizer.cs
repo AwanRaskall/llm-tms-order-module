@@ -69,13 +69,13 @@ namespace OrderModule.Application.Features.OrderExtractorService.Utils
                 }
             }
 
-            // Case 2: clean JSON object
+            // Case 2: clean Json object
             if (content.StartsWith('{') && content.EndsWith('}'))
             {
                 return content;
             }
 
-            // Case 3: JSON embedded between other text
+            // Case 3: Json embedded between other text
             int start = content.IndexOf('{');
             int end = content.LastIndexOf('}');
 
@@ -85,43 +85,6 @@ namespace OrderModule.Application.Features.OrderExtractorService.Utils
             }
 
             throw new JsonException("Unable to extract JSON from model response.");
-        }
-
-
-        /// <summary>
-        /// Parses a date string returned by LLM into a nullable DateTime
-        /// </summary>
-        public DateTime? ParseDate(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return null;
-
-            string[] formats =
-            {
-                "dd/MM/yyyy",
-                "MM/dd/yyyy",
-                "dd.MM.yyyy",
-                "MMMM d, yyyy",
-                "MMM d, yyyy",
-                "yyyy-MM-dd",
-                "yyyy_MM-dd",
-                "dd MMMM",
-                "dd-MMMM",
-                "MMMM dd",
-                "MMMM-dd",
-            };
-
-            if (DateTime.TryParseExact( 
-                input, 
-                formats, 
-                CultureInfo.InvariantCulture, 
-                DateTimeStyles.None, 
-                out var date))
-            {
-                return date;
-            }
-
-            return null;
         }
 
     }

@@ -116,7 +116,29 @@ namespace OrderModule.Application.Features.OrderExtractorService.Utils
               then Transport MUST be """" and the mode phrase MUST be copied into Notes.
             - If Transport would be anything else (including ""land"", ""road"", ""rail""), set Transport to """".
             
+            Before outputting JSON, DepPoint and ArrPoint MUST be:
+            - A specific, concrete location such as:
+              - a city name (e.g. Milan, Hamburg, Warsaw)
+              - a named warehouse, terminal, port, or facility
 
+            DepPoint and ArrPoint MUST NOT contain:
+            - Regions or macro-areas (north of Italy, southern Germany, central Europe)
+            - Directional or vague terms (north, south, area, region, zone)
+
+            EXAMPLES:
+            1) Example for transport:
+                Input: ""Transport by land.""
+                Output Transport: """"  (NOT ""land"")
+            2) Example for DepPoint:
+                Input: ""The shipment should leave from north of Italy""
+                Output DepPoint: """"  (NOT ""north of Italy"")
+                Notes: ""leave from north of Italy""
+            3) Example for ArrPoint:
+                Input: ""The shipment should reach southern Germany ""
+                Output ArrPoint: """"  (NOT ""southern Germany"")
+                Notes: ""reach southern Germany""
+
+                
             Here is the extracted text:
             \""\""\""{0}\""\""\""
         ";
