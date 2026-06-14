@@ -25,7 +25,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            PropertyNamingPolicy        = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true
         };
 
@@ -34,9 +34,9 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
             IConfiguration configuration,
             int maxRetries = 3)
         {
-            _logger        = logger;
+            _logger = logger;
             _configuration = configuration;
-            _maxRetries    = maxRetries;
+            _maxRetries = maxRetries;
         }
 
         public HttpClient GetClient()
@@ -81,9 +81,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
             return _client;
         }
 
-        public async Task<TResponse> SendAsync<TRequest, TResponse>(
-            string url,
-            TRequest parameters)
+        public async Task<TResponse> SendAsync<TRequest, TResponse>(string url, TRequest parameters)
         {
             if (string.IsNullOrWhiteSpace(url))
                 _logger.LogWarning("URL cannot be empty");
@@ -117,29 +115,24 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
                     _logger.LogInformation("OpenRouter POST {Url} attempt {Attempt}", url, attempt);
 
                     response = await GetClient().SendAsync(request).ConfigureAwait(false);
+                    var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                     if (!response.IsSuccessStatusCode)
                     {
-                        var errorBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         _logger.LogWarning(
                             "OpenRouter POST {Url} returned {StatusCode} on attempt {Attempt}: {Error}",
-                            url, 
-                            response.StatusCode, 
-                            attempt, 
-                            errorBody);
-
+                            url, response.StatusCode, attempt, responseBody);
+                        
                         // Error 404 - the model is unavailable
                         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                             throw new HttpRequestException(
                                 $"OpenRouter model not available (404). " +
-                                $"Please select a different model in Configuration. Details: {errorBody}");
+                                $"Please select a different model in Configuration. Details: {responseBody}"
+                            );
+
+                        continue;
                     }
-
-                    var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    // Console.WriteLine("-- OpenRouter raw response --");
-                    // Console.WriteLine(responseBody);
-                    // Console.WriteLine("-- End raw response --");
-                                        
+                  
                     return JsonSerializer.Deserialize<TResponse>(responseBody, JsonOptions)!;
                 }
                 catch (HttpRequestException ex)
