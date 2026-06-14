@@ -2,8 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderModule.Application\OrderModule.Application.csproj" />
-    <ProjectReference Include="..\OrderModule.DataModels\OrderModule.DataModels.csproj" />
     <ProjectReference Include="..\OrderModule.RavenDB\OrderModule.RavenDB.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.8" />
   </ItemGroup>
 
   <PropertyGroup>

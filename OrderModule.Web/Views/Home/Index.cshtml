@@ -1,8 +1,276 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+<style>
+
+    @* Hero section *@
+
+    .lf-hero {
+    position: relative;
+    height: calc(100vh - var(--nav-height));
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-image: url('/images/pic_hero.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    overflow: hidden;
+    }
+
+    .lf-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(26, 46, 28, 0.52);
+    }
+
+    .lf-hero__content {
+        position: relative;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 15vh;
+    }
+
+    .lf-hero__title {
+        font-family: var(--font-display);
+        font-size: clamp(40px, 7vw, 72px);
+        font-weight: 700;
+        color: #E5E6FA;
+        letter-spacing: -0.01em;
+        line-height: 1;
+        margin-bottom: 25vh;
+    }
+
+    .lf-hero__subtitle {
+        font-size: clamp(11px, 1.5vw, 14px);
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.72);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .lf-hero__scroll {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 28px;
+        text-decoration: none;
+        animation: lf-bounce 2.2s ease-in-out infinite;
+        transition: color 0.15s;
+    }
+    .lf-hero__scroll:hover { color: rgba(255, 255, 255, 0.8); }
+
+    @@keyframes lf-bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50%       { transform: translateX(-50%) translateY(9px); }
+    }
+
+
+    @* Cards section *@
+
+    .lf-features {
+        background: var(--lf-lavender);
+        padding: 72px 28px;
+        height: calc(100vh - var(--nav-height));
+        min-height: 500px;
+    }
+
+    .lf-features__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .lf-features__intro {
+        text-align: center;
+        margin-bottom: 44px;
+    }
+
+    .lf-features__tagline {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--lf-green);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 10px;
+    }
+
+    .lf-features__heading {
+        font-family: var(--font-display);
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        color: var(--lf-text);
+        margin-bottom: 12px;
+    }
+
+    .lf-features__desc {
+        font-size: 15px;
+        color: var(--lf-text-muted);
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.75;
+    }
+
+    .lf-features__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+    }
+
+    .lf-card {
+        background: var(--lf-white);
+        border: 0.5px solid var(--lf-border);
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        cursor: pointer;
+    }
+    .lf-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 36px rgba(62, 95, 68, 0.13);
+    }
+
+    .lf-card__img {
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--lf-green);
+    }
+    .lf-card:nth-child(2) .lf-card__img { background: var(--lf-green-mid); }
+    .lf-card:nth-child(3) .lf-card__img { background: var(--lf-green-dark); }
+
+    .lf-card__img i {
+        font-size: 40px;
+        color: var(--lf-lavender-icon);
+    }
+
+    .lf-card__body {
+        padding: 22px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lf-card__title {
+        font-family: var(--font-display);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--lf-text);
+        margin-bottom: 8px;
+    }
+
+    .lf-card__desc {
+        font-size: 13.5px;
+        color: var(--lf-text-muted);
+        line-height: 1.65;
+        flex: 1;
+    }
+
+    .lf-card__link {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--lf-green);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 14px;
+        text-decoration: none;
+    }
+    .lf-card__link i { font-size: 13px; transition: transform 0.15s; }
+    .lf-card:hover .lf-card__link i { transform: translateX(4px); }
+
+</style>
+}
+
+
+<!-- Section 1: first screen -->
+<section class='lf-hero'>
+    <div class='lf-hero__content'>
+        <h1 class='lf-hero__title'>LogiFlow</h1>
+        <p class='lf-hero__subtitle'>Transport Management System</p>
+    </div>
+    <a href='#features' class='lf-hero__scroll' aria-label='Scroll down'>
+        <i class='ti ti-chevron-down' aria-hidden='true'></i>
+    </a>
+</section>
+
+<!-- Section-2: three card -->
+<section class='lf-features' id='features'>
+    <div class='lf-features__inner'>
+        
+        <div class='lf-features__intro'>
+            <p class='lf-features__tagline'>AI-powered | LLM extraction</p>
+            <h2 class='lf-features__heading'>Automate your transport orders</h2>
+            <p class='lf-features__desc'>
+                Upload email messages and let LLM extract all relevant transport data
+                automatically. Review, edit, and save your orders with ease.
+            </p>
+        </div>
+
+        <div class='lf-features__grid'>
+
+            <a href='/OrderExtractor/Index' class='lf-card'>
+                <div class='lf-card__img'>
+                    <i class='ti ti-mail-up' aria-hidden='true'></i>
+                </div>
+                <div class='lf-card__body'>
+                    <div class='lf-card__title'>Order Data Extractor</div>
+                    <div class='lf-card__desc'>
+                        Upload a .eml or .msg email file and extract
+                        all transport order fields automatically using LLM.
+                    </div>
+                    <span class='lf-card__link'>
+                        Open <i class='ti ti-arrow-right' aria-hidden='true'></i>
+                    </span>
+                </div>
+            </a>
+
+            <a href='/OrderExtractor/ShipmentRequests' class='lf-card'>
+                <div class='lf-card__img'>
+                    <i class='ti ti-files' aria-hidden='true'></i>
+                </div>
+                <div class='lf-card__body'>
+                    <div class='lf-card__title'>Shipment Requests</div>
+                    <div class='lf-card__desc'>
+                        View, filter, and manage all saved transport
+                        order drafts in one organised table.
+                    </div>
+                    <span class='lf-card__link'>
+                        Open <i class='ti ti-arrow-right' aria-hidden='true'></i>
+                    </span>
+                </div>
+            </a>
+
+            <a href='/Configuration/Index' class='lf-card'>
+                <div class='lf-card__img'>
+                    <i class='ti ti-settings' aria-hidden='true'></i>
+                </div>
+                <div class='lf-card__body'>
+                    <div class='lf-card__title'>Configuration</div>
+                    <div class='lf-card__desc'>
+                        Choose your preferred LLM model:
+                        Ollama local model or OpenAI one.
+                    </div>
+                    <span class='lf-card__link'>
+                        Open <i class='ti ti-arrow-right' aria-hidden='true'></i>
+                    </span>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
