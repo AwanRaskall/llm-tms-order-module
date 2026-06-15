@@ -46,6 +46,7 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 
 ### Home Page
 ![Home page](docs/screenshots/home.png)
+![Home page Cards](docs/screenshots/home2.png)
 
 ### Order Extractor - upload email file and extract the data
 ![Order Extractor](docs/screenshots/extractor.png)
