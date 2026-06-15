@@ -2,15 +2,15 @@
 
 ## Layer Responsibilities
 
-### OrderModule.Web
+**OrderModule.Web**
 Presentation layer. Controllers receive HTTP requests, call Application services, map domain models to ViewModels and return views or JSON responses.
 
 Vue 2 handles frontend interactivity: drag-and-drop upload, loading state, form binding and save notification - without SPA complexity.
 
-### OrderModule.Application
+**OrderModule.Application**
 Business logic layer. Contains all LLM integration, email parsing, data extraction and RavenDB persistence. Has no dependency on the Web layer.
 
-### OrderModule.RavenDB
+**OrderModule.RavenDB**
 Data access layer. Defines the DocumentStore singleton, X.509 certificate authentication and static indexes deployed at startup.
 
 ---
