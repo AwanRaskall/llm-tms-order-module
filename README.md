@@ -25,6 +25,8 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 - `OrderModule.Application` - Business logic: LLM services, extraction, persistence
 - `OrderModule.RavenDB` - Database indexes and DocumentStore initialization
 
+-> Full architecture details (layer responsibilities, request flow and solution structure): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
 ---
 
 ## Tech Stack
