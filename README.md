@@ -63,7 +63,7 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 ## Available LLM Models
 
 **OpenRouter (cloud):**
-- `openrouter/free` - auto-router
+- `openrouter/free`
 - `openai/gpt-oss-120b:free`
 - `openai/gpt-oss-20b:free`
 - `google/gemma-4-26b-a4b-it:free`
@@ -73,5 +73,7 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 - `mistral:7b`
 - `llama3.2:3b`
 - `granite3.2:2b`
+
+-> More about chosen LLM models: [docs/LLM_MODELS.md](docs/LLM_MODELS.md)
 
 ---
