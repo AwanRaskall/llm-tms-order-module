@@ -11,7 +11,8 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 ## Key Features
 
 - **Drag-and-drop upload** of Gmail `.eml` and Outlook `.msg` email files
-- **LLM extraction** of 8 structured transport order fields from - **Two LLM providers**: OpenRouter (cloud, free tier) and Ollama (local, offline)raw email text
+- **LLM extraction** of 8 structured transport order fields from raw email text
+- **Two LLM providers**: OpenRouter (cloud) and Ollama (local) 
 - **Editable form** to review and correct extracted data before saving
 - **RavenDB Cloud** persistence with server-side filtering across 7 fields
 - **Responsive table** with horizontal scroll for Shipment Requests (saved transport data)
@@ -63,16 +64,23 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 ## Available LLM Models
 
 **OpenRouter (cloud):**
-- `openrouter/free`
-- `openai/gpt-oss-120b:free`
-- `openai/gpt-oss-20b:free`
-- `google/gemma-4-26b-a4b-it:free`
-- `nvidia/nemotron-3-super-120b-a12b:free`
+
+| Model name |  Why chosen |
+|---|---|
+| `openrouter-free` | Auto-selects best available free model |
+| `gpt-oss-120b` | Large 120B model - best at following complex structured JSON instructions and extracting data from unstructured text |
+| `gpt-oss-20b` | Smaller 20B model - faster response, good balance of speed and accuracy for straightforward emails |
+| `gemma-4-26b-a4b-it` | Instruction-tuned variant - strong at following strict output format rules and keyword extraction |
+| `nemotron3` | Nvidia 120B model - excels at reasoning tasks and handling ambiguous or incomplete text |
+
 
 **Ollama (local):**
-- `mistral:7b`
-- `llama3.2:3b`
-- `granite3.2:2b`
+
+| Model name |  Why chosen |
+|---|---|
+| `mistral` | Well-balanced instruction-following model - reliable JSON output and good at identifying key logistics terms in email text |
+| `llama` | Lightweight and fast - efficient for structured output extraction, good choice for machines with limited RAM |
+| `granite` | IBM's model designed for enterprise text extraction - particularly strong at identifying structured data fields in business documents |
 
 -> More about chosen LLM models: [docs/LLM_MODELS.md](docs/LLM_MODELS.md)
 

@@ -33,13 +33,13 @@ OpenRouter change frequently - new models are added and old ones may be
 removed. The models below were selected during development of this project
 based on availability and extraction quality at that time.
 
-| Config key | Model identifier | Why chosen |
-|---|---|---|
-| `openrouter-free` | `openrouter/free` | Auto-selects best available free model |
-| `gpt-oss-120b` | `openai/gpt-oss-120b:free` | Large 120B model - best at following complex structured JSON instructions and extracting data from unstructured text |
-| `gpt-oss-20b` | `openai/gpt-oss-20b:free` | Smaller 20B model - faster response, good balance of speed and accuracy for straightforward emails |
-| `gemma-4-26b-a4b-it` | `google/gemma-4-26b-a4b-it:free` | Instruction-tuned variant - strong at following strict output format rules and keyword extraction |
-| `nemotron3` | `nvidia/nemotron-3-super-120b-a12b:free` | Nvidia 120B model - excels at reasoning tasks and handling ambiguous or incomplete text |
+| Config key | Model identifier |
+|---|---|
+| `openrouter-free` | `openrouter/free` |
+| `gpt-oss-120b` | `openai/gpt-oss-120b:free` |
+| `gpt-oss-20b` | `openai/gpt-oss-20b:free` | 
+| `gemma-4-26b-a4b-it` | `google/gemma-4-26b-a4b-it:free` |
+| `nemotron3` | `nvidia/nemotron-3-super-120b-a12b:free` | 
 
 ---
 
@@ -50,20 +50,19 @@ Runs entirely on your machine. No API key, no request limits, works offline.
 To use Ollama models you need to:
 1. Download and install Ollama from [ollama.com](https://ollama.com)
 2. Pull the models you want to use:
-
 ```bash
 ollama pull mistral:7b
 ollama pull llama3.2:3b
 ollama pull granite3.2:2b
 ```
-
 3. Add the Ollama base URL to `appsettings.Development.json`
 
-| Config key | Model identifier | RAM required |  Why chosen |
-|---|---|---|---|
-| `mistral` | `mistral:7b` | ~4 GB | Well-balanced instruction-following model - reliable JSON output and good at identifying key logistics terms in email text |
-| `llama` | `llama3.2:3b` | ~2 GB | Lightweight and fast - efficient for structured output extraction, good choice for machines with limited RAM |
-| `granite` | `granite3.2:2b` | ~2 GB | IBM's model designed for enterprise text extraction - particularly strong at identifying structured data fields in business documents |
+
+| Config key | Model identifier | RAM required |
+|---|---|---|
+| `mistral` | `mistral:7b` | ~4 GB |
+| `llama` | `llama3.2:3b` | ~2 GB |
+| `granite` | `granite3.2:2b` | ~2 GB |
 
 ---
 
