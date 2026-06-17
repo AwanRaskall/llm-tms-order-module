@@ -126,9 +126,11 @@ cd llm-tms-order-module
 ```
 
 2. Install the required packages
+
 Install into their respective projects as listed in the [Requirements](#requirements) section.
 
 3. Configure secrets
+
 Create `OrderModule.Web/appsettings.Development.json` (add folder in `.gitignore`):
 ```json
 {
@@ -158,6 +160,21 @@ dotnet run
 Navigate to `https://localhost:*****` (the port shown in the terminal)
 
 ---
+
+
+## Future Improvements
+
+**LLM Self-Validation Cycle** — add a secondary prompt after initial extraction to instruct the model to verify its own output against the JSON schema before returning results, reducing structural errors and missing fields.
+
+**Prompt Engineering** — continue iterating on prompt rules to reduce cases where LLMs ignore specific extraction constraints.
+
+**Email API Integration** — replace manual file upload with direct corporate mail API integration for automatic detection and ingestion of transport-related emails, moving toward event-driven processing.
+
+**Master Data Integration** — connect to a warehouse master database to validate and normalize extracted locations against corporate address records, reducing typographical errors and improving data consistency.
+
+**Extraction Quality Monitoring** — introduce logging of extraction deviations, periodic performance audits and model behavior assessments to ensure long-term reliability across varying operational conditions.
+
+---
 ## License
 
 This project is distributed under the Apache License 2.0.
@@ -167,8 +184,3 @@ This project is distributed under the Apache License 2.0.
 - Modified versions must carry a notice stating that changes were made.
 
 [Full license text](https://github.com/AwanRaskall/llm-tms-order-module/blob/main/LICENSE)
-
----
-
-Future Improvements
-CI / CD
