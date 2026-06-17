@@ -25,6 +25,7 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 - [Requirements](#requirements)
 - [Available LLM Models](#available-LLM-Models)
 - [Getting Started](#getting-started)
+- [CI/CD workflows](#ci-and-cd-workflows)
 - [License](#license)
 
 ---
@@ -164,17 +165,27 @@ Navigate to `https://localhost:*****` (the port shown in the terminal)
 
 ## Future Improvements
 
-**LLM Self-Validation Cycle** — add a secondary prompt after initial extraction to instruct the model to verify its own output against the JSON schema before returning results, reducing structural errors and missing fields.
+**LLM Self-Validation Cycle** - add a secondary prompt after initial extraction to instruct the model to verify its own output against the JSON schema before returning results, reducing structural errors and missing fields.
 
-**Prompt Engineering** — continue iterating on prompt rules to reduce cases where LLMs ignore specific extraction constraints.
+**Prompt Engineering** - continue iterating on prompt rules to reduce cases where LLMs ignore specific extraction constraints.
 
-**Email API Integration** — replace manual file upload with direct corporate mail API integration for automatic detection and ingestion of transport-related emails, moving toward event-driven processing.
+**Email API Integration** - replace manual file upload with direct corporate mail API integration for automatic detection and ingestion of transport-related emails, moving toward event-driven processing.
 
-**Master Data Integration** — connect to a warehouse master database to validate and normalize extracted locations against corporate address records, reducing typographical errors and improving data consistency.
+**Master Data Integration** - connect to a warehouse master database to validate and normalize extracted locations against corporate address records, reducing typographical errors and improving data consistency.
 
-**Extraction Quality Monitoring** — introduce logging of extraction deviations, periodic performance audits and model behavior assessments to ensure long-term reliability across varying operational conditions.
+**Extraction Quality Monitoring** - introduce logging of extraction deviations, periodic performance audits and model behavior assessments to ensure long-term reliability across varying operational conditions.
 
 ---
+
+## CI and CD workflows
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| **Build and Code Quality Check** | Push or PR to `develop` / `main` | Runs `dotnet build` and `dotnet format --verify-no-changes` to ensure the code compiles and meets formatting standards |
+| **Create Release** | Push of a version tag `v*` | Runs `dotnet publish` and automatically creates a GitHub Release |
+
+---
+
 ## License
 
 This project is distributed under the Apache License 2.0.
