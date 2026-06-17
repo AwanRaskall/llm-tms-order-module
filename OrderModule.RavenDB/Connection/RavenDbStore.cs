@@ -24,7 +24,7 @@ namespace OrderModule.RavenDB.Connection
                 if (_store != null)
                     return _store;
 
-                var urls     = configuration
+                var urls = configuration
                     .GetSection("RavenDB:Urls")
                     .Get<string[]>();
                 var database = configuration["RavenDB:DatabaseName"];
@@ -43,8 +43,8 @@ namespace OrderModule.RavenDB.Connection
                     store.Certificate = new X509Certificate2(
                         certPath,
                         certPassword,
-                        X509KeyStorageFlags.UserKeySet      |
-                        X509KeyStorageFlags.PersistKeySet   |
+                        X509KeyStorageFlags.UserKeySet |
+                        X509KeyStorageFlags.PersistKeySet |
                         X509KeyStorageFlags.Exportable
                     );
                 }
@@ -54,7 +54,7 @@ namespace OrderModule.RavenDB.Connection
 
                 // Deploy all indexes from this project to RavenDB
                 // Executed once at application startup
-                IndexCreation.CreateIndexes( typeof(ShipmentRequests_ByFilters).Assembly, _store);
+                IndexCreation.CreateIndexes(typeof(ShipmentRequests_ByFilters).Assembly, _store);
 
             }
             return _store;

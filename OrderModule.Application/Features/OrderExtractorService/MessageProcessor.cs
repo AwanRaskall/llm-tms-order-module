@@ -35,10 +35,10 @@ namespace OrderModule.Application.Features.OrderExtractorService
             string extractedText = ExtractTextService.ExtractText(fileStream, fileName);
 
             string prompt = PromptBuilder.BuildExtractionPrompt(extractedText);
-            
+
             // the model will be taken from Configuration page
             string modelName = _configReadService.GetConfiguration().SelectedModel;
-            
+
             string model;
             switch (modelName)
             {
@@ -46,7 +46,7 @@ namespace OrderModule.Application.Features.OrderExtractorService
                 case "openrouter-free":
                     model = "openrouter/free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);
-                
+
                 case "gpt-oss-120b":
                     model = "openai/gpt-oss-120b:free";
                     return await _openRouterService.ExtractDataFromText(model, prompt);

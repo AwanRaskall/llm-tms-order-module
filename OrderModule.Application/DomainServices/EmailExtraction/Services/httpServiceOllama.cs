@@ -64,7 +64,7 @@ namespace OrderModule.Application.DomainServices.EmailExtraction.Services
             {
                 _logger.LogWarning("URL cannot be empty");
             }
-                
+
             string json;
             try
             {
@@ -113,7 +113,7 @@ namespace OrderModule.Application.DomainServices.EmailExtraction.Services
                 }
                 catch (TaskCanceledException ex)
                 {
-                    _logger.LogWarning(ex,"Ollama POST {Url} timed out (attempt {Attempt})", url, attempt);
+                    _logger.LogWarning(ex, "Ollama POST {Url} timed out (attempt {Attempt})", url, attempt);
                 }
                 catch (Exception ex)
                 {

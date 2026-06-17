@@ -147,11 +147,11 @@ namespace OrderModule.Application.Features.OrderExtractorService.Utils
         {
             if (string.IsNullOrWhiteSpace(extractedText))
                 throw new ArgumentException("Email text cannot be empty");
- 
+
             return string.Format(basePrompt, extractedText);
-    }
-            
-        
-            
+        }
+
+
+
     }
 }

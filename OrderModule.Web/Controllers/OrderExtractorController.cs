@@ -9,12 +9,12 @@ namespace OrderModule.Web.Controllers
 {
     public class OrderExtractorController : Controller
     {
-        
+
         private readonly MessageProcessor _messageProcessor;
         private readonly Normalizer _normalizer;
-        private readonly ShipmentRequestService       _shipmentRequestService;
-        private readonly ShipmentRequestReadService   _shipmentRequestReadService;
-        
+        private readonly ShipmentRequestService _shipmentRequestService;
+        private readonly ShipmentRequestReadService _shipmentRequestReadService;
+
         public OrderExtractorController(
             MessageProcessor messageProcessor,
             Normalizer normalizer,
@@ -27,7 +27,7 @@ namespace OrderModule.Web.Controllers
             _shipmentRequestService = shipmentRequestService;
             _shipmentRequestReadService = shipmentRequestReadService;
         }
-        
+
         public IActionResult Index()
         {
             return View(new ViewModelSummary());

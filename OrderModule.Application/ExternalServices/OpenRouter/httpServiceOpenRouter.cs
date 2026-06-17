@@ -71,7 +71,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
                             _client.DefaultRequestHeaders.Authorization.Scheme,
                             !string.IsNullOrEmpty(_client.DefaultRequestHeaders.Authorization.Parameter)
                         );
-                    
+
                     }
 
                     // Optional attribution
@@ -124,7 +124,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
                         _logger.LogWarning(
                             "OpenRouter POST {Url} returned {StatusCode} on attempt {Attempt}: {Error}",
                             url, response.StatusCode, attempt, responseBody);
-                        
+
                         // Error 404 - the model is unavailable
                         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                             throw new HttpRequestException(
@@ -134,7 +134,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
 
                         continue;
                     }
-                  
+
                     return JsonSerializer.Deserialize<TResponse>(responseBody, JsonOptions)!;
                 }
                 catch (HttpRequestException ex)

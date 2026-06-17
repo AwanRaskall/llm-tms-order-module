@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OrderModule.Application.Features.OrderExtractorService.Models;
 using OrderModule.Application.Features.OrderExtractorService.Utils;
-using OrderModule.Application.Interfaces; 
+using OrderModule.Application.Interfaces;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
     /// Sends extraction prompts to OpenRouter API.
     /// Uses the OpenAI SDK since OpenRouter follows the same API format.
     /// </summary>
-    public class OpenRouterService: ILLMService
+    public class OpenRouterService : ILLMService
     {
         private readonly IHttpServiceOpenRouter _httpService;
         private static readonly JsonSerializerOptions JsonOptions = new()
@@ -37,10 +37,10 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
         {
             var request = new OpenRouterRequest
             {
-                Model       = model,
+                Model = model,
                 Temperature = temperature,
-                MaxTokens   = max_tokens,
-                Messages    = new List<OpenRouterMessage>
+                MaxTokens = max_tokens,
+                Messages = new List<OpenRouterMessage>
                 {
                     new() { Role = "system",
                             Content = "Return ONLY valid JSON. No markdown. No explanations." },
@@ -54,12 +54,12 @@ namespace OrderModule.Application.ExternalServices.OpenRouter
                 throw new InvalidOperationException("OpenRouter returned null response after all retry attempts.");
 
 
-            var textContent   = response?.GetContent() ?? string.Empty;
+            var textContent = response?.GetContent() ?? string.Empty;
 
             // Console.WriteLine("-- GetContent() result --");
             // Console.WriteLine(textContent);
             // Console.WriteLine("-- End content --");
-            
+
             var extractedJson = Normalizer.ExtractJson(textContent);
             var result = JsonSerializer.Deserialize<ExtractedSummary>(extractedJson, JsonOptions);
 

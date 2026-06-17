@@ -19,13 +19,13 @@ namespace OrderModule.Application.Features.ShipmentRequests
         /// Creates a new ShipmentRequest document in RavenDB.
         /// </summary>
         public void Handle(
-            string invoice, 
-            string depDate, 
+            string invoice,
+            string depDate,
             string depPoint,
-            string arrDate, 
-            string arrPoint, 
+            string arrDate,
+            string arrPoint,
             string transport,
-            string products, 
+            string products,
             string notes)
         {
             var request = new ShipmentRequest(
