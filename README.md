@@ -72,15 +72,15 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 |---|---|---|
 | `RavenDB.Client` | RavenDB document store, sessions, queries | `dotnet add package RavenDB.Client --version 7.2.2` |
 | `MsgReader` | Parsing `.eml` and `.msg` email files | `dotnet add package MsgReader --version 6.0.11` |
-| `Microsoft.Extensions.Configuration.Abstractions` | `IConfiguration` interface in class library | `dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 10.0.8` |
-| `Microsoft.Extensions.Logging.Abstractions` | `ILogger<T>` interface in class library | `dotnet add package Microsoft.Extensions.Logging.Abstractions --version 10.0.8` |
+| `Configuration.Abstractions` | `IConfiguration` interface in class library | `dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 10.0.8` |
+| `Logging.Abstractions` | `ILogger<T>` interface in class library | `dotnet add package Microsoft.Extensions.Logging.Abstractions --version 10.0.8` |
 
 ### OrderModule.RavenDB
 | Package | Purpose | Command |
 |---|---|---|
 | `RavenDB.Client` | DocumentStore initialization and index deployment | `dotnet add package RavenDB.Client --version 7.2.2` |
-| `Microsoft.Extensions.Configuration.Abstractions` | `IConfiguration` interface in class library | `dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 10.0.8` |
-| `Microsoft.Extensions.Configuration.Binder` | Reading config values via `configuration["key"]` | `dotnet add package Microsoft.Extensions.Configuration.Binder --version 10.0.8` |
+| `Configuration.Abstractions` | `IConfiguration` interface in class library | `dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 10.0.8` |
+| `Configuration.Binder` | Reading config values via `configuration["key"]` | `dotnet add package Microsoft.Extensions.Configuration.Binder --version 10.0.8` |
 
 ### OrderModule.Web
 | Package | Purpose | Command |
@@ -88,7 +88,7 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 | `System.Text.Encoding.CodePages` | Windows-1252 encoding for correct `.msg` parsing | `dotnet add package System.Text.Encoding.CodePages --version 10.0.8` |
 
 - After installing `System.Text.Encoding.CodePages`, register it as the **first line** of `Program.cs`: `Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);`
-- `Microsoft.Extensions` packages are included automatically in the Web project via `Microsoft.NET.Sdk.Web` - no manual installation needed there.
+- `Microsoft.Extensions` packages are included automatically in the Web project via `Microsoft.NET.Sdk.Web` - no installation needed.
 - Vue 2, Tabler Icons and Google Fonts are referenced via CDN in `_Layout.cshtml` and load automatically - no installation needed.
 
 ---
@@ -110,13 +110,54 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 | Model name |  Why chosen |
 |---|---|
 | `mistral` | Well-balanced instruction-following model - reliable JSON output and good at identifying key logistics terms in email text |
-| `llama` | Lightweight and fast - efficient for structured output extraction, good choice for machines with limited RAM |
-| `granite` | IBM's model designed for enterprise text extraction - particularly strong at identifying structured data fields in business documents |
+| `llama3.2` | Lightweight and fast - efficient for structured output extraction, good choice for machines with limited RAM |
+| `granite3.2` | IBM's model designed for enterprise text extraction - particularly strong at identifying structured data fields in business documents |
 
 -> More about chosen LLM models: [docs/LLM_MODELS.md](docs/LLM_MODELS.md)
 
 ---
 
+## Getting Started
+
+1. Clone the repository
+```bash
+git clone https://github.com/your-username/llm-tms-order-module.git
+cd llm-tms-order-module
+```
+
+2. Install the required packages
+Install into their respective projects as listed in the [Requirements](#requirements) section.
+
+3. Configure secrets
+Create `OrderModule.Web/appsettings.Development.json` (add folder in `.gitignore`):
+```json
+{
+  "OpenRouter": {
+    "ApiKey": "your-openrouter-api-key"
+  },
+  "Ollama": {
+    "BaseUrl": "http://localhost:11434"
+  },
+  "RavenDB": {
+    "Urls": ["https://your-instance.ravendb.cloud"],
+    "DatabaseName": "OrderModule",
+    "CertPath": "path/to/certificate.pfx",
+    "CertPassword": ""
+  }
+}
+```
+
+For a detailed guide on configuring RavenDB, Ollama and OpenRouter see [docs/SETUP.md](docs/SETUP.md)
+
+4. Run the Application
+```bash
+cd OrderModule.Web
+dotnet run
+```
+
+Navigate to `https://localhost:*****` (the port shown in the terminal)
+
+---
 ## License
 
 This project is distributed under the Apache License 2.0.
@@ -129,6 +170,5 @@ This project is distributed under the Apache License 2.0.
 
 ---
 
-set up
 Future Improvements
 CI / CD
