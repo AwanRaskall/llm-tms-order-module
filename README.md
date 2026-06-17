@@ -6,8 +6,6 @@ The module introduces a language-model-driven interpretation layer that extracts
 
 Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automatically extract 8 structured order fields and save them to a cloud database.
 
----
-
 ## Key Features
 
 - **Drag-and-drop upload** of Gmail `.eml` and Outlook `.msg` email files
@@ -18,8 +16,6 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 - **Responsive table** with horizontal scroll for Shipment Requests (saved transport data)
 - **Configuration page** to switch between models without redeployment
 
----
-
 ## Project Structure
 
 - `OrderModule.Web` - ASP.NET Core MVC web application: controllers, views, models
@@ -27,8 +23,6 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 - `OrderModule.RavenDB` - Database indexes and DocumentStore initialization
 
 -> Full architecture details (layer responsibilities, request flow and solution structure): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-
----
 
 ## Tech Stack
 
@@ -40,6 +34,34 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 | Cloud LLM | OpenRouter API (free tier) |
 | Local LLM | Ollama |
 | Email parsing | MsgReader |
+
+## Requirements
+
+### OrderModule.Application
+| Package | Purpose | Command |
+|---|---|---|
+| `RavenDB.Client` | RavenDB document store, sessions, queries | `dotnet add package RavenDB.Client --version 7.2.2` |
+| `MsgReader` | Parsing `.eml` and `.msg` email files | `dotnet add package MsgReader --version 6.0.11` |
+| `Microsoft.Extensions.Configuration.Abstractions` | `IConfiguration` interface in class library | `dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 10.0.8` |
+| `Microsoft.Extensions.Logging.Abstractions` | `ILogger<T>` interface in class library | `dotnet add package Microsoft.Extensions.Logging.Abstractions --version 10.0.8` |
+
+### OrderModule.RavenDB
+| Package | Purpose | Command |
+|---|---|---|
+| `RavenDB.Client` | DocumentStore initialization and index deployment | `dotnet add package RavenDB.Client --version 7.2.2` |
+| `Microsoft.Extensions.Configuration.Abstractions` | `IConfiguration` interface in class library | `dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 10.0.8` |
+| `Microsoft.Extensions.Configuration.Binder` | Reading config values via `configuration["key"]` | `dotnet add package Microsoft.Extensions.Configuration.Binder --version 10.0.8` |
+
+### OrderModule.Web
+| Package | Purpose | Command |
+|---|---|---|
+| `System.Text.Encoding.CodePages` | Windows-1252 encoding for correct `.msg` parsing | `dotnet add package System.Text.Encoding.CodePages --version 10.0.8` |
+
+> After installing `System.Text.Encoding.CodePages`, register it as the **first line** of `Program.cs`: `Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);`
+
+> `Microsoft.Extensions` packages are included automatically in the Web project via `Microsoft.NET.Sdk.Web` - no manual installation needed there.
+
+> Vue 2, Tabler Icons and Google Fonts are referenced via CDN in `_Layout.cshtml` and load automatically - no installation needed.
 
 ---
 
@@ -85,3 +107,8 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 -> More about chosen LLM models: [docs/LLM_MODELS.md](docs/LLM_MODELS.md)
 
 ---
+
+set up
+Future Improvements
+CI / CD
+License
