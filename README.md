@@ -16,13 +16,35 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 - **Responsive table** with horizontal scroll for Shipment Requests (saved transport data)
 - **Configuration page** to switch between models without redeployment
 
-## Project Structure
+---
 
-- `OrderModule.Web` - ASP.NET Core MVC web application: controllers, views, models
-- `OrderModule.Application` - Business logic: LLM services, extraction, persistence
-- `OrderModule.RavenDB` - Database indexes and DocumentStore initialization
+## Contents
+- [UI Overview](#UI-Overview)
+- [Tech Stack](#tech-Stack)
+- [Project Structure](#project-structure)
+- [Requirements](#requirements)
+- [Available LLM Models](#available-LLM-Models)
+- [Getting Started](#getting-started)
+- [License](#license)
 
--> Full architecture details (layer responsibilities, request flow and solution structure): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+---
+
+## UI Overview
+
+### Home Page
+![Home page](docs/screenshots/home.png)
+![Home page Cards](docs/screenshots/home2.png)
+
+### Order Extractor - upload email file and extract the data
+![Order Extractor](docs/screenshots/extractor.png)
+
+### Shipment Requests - saved orders table with filters
+![Shipment Requests](docs/screenshots/shipment-requests.png)
+
+### Configuration - select LLM model to run
+![Configuration](docs/screenshots/configuration.png)
+
+---
 
 ## Tech Stack
 
@@ -34,6 +56,14 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 | Cloud LLM | OpenRouter API (free tier) |
 | Local LLM | Ollama |
 | Email parsing | MsgReader |
+
+## Project Structure
+
+- `OrderModule.Web` - ASP.NET Core MVC web application: controllers, views, models
+- `OrderModule.Application` - Business logic: LLM services, extraction, persistence
+- `OrderModule.RavenDB` - Database indexes and DocumentStore initialization
+
+-> Full architecture details (layer responsibilities, request flow and solution structure): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Requirements
 
@@ -57,29 +87,9 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 |---|---|---|
 | `System.Text.Encoding.CodePages` | Windows-1252 encoding for correct `.msg` parsing | `dotnet add package System.Text.Encoding.CodePages --version 10.0.8` |
 
-> After installing `System.Text.Encoding.CodePages`, register it as the **first line** of `Program.cs`: `Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);`
-
-> `Microsoft.Extensions` packages are included automatically in the Web project via `Microsoft.NET.Sdk.Web` - no manual installation needed there.
-
-> Vue 2, Tabler Icons and Google Fonts are referenced via CDN in `_Layout.cshtml` and load automatically - no installation needed.
-
----
-
-## UI Overview
-
-### Home Page
-![Home page](docs/screenshots/home.png)
-![Home page Cards](docs/screenshots/home2.png)
-
-### Order Extractor - upload email file and extract the data
-![Order Extractor](docs/screenshots/extractor.png)
-
-### Shipment Requests - saved orders table with filters
-![Shipment Requests](docs/screenshots/shipment-requests.png)
-
-### Configuration - select LLM model to run
-![Configuration](docs/screenshots/configuration.png)
-
+- After installing `System.Text.Encoding.CodePages`, register it as the **first line** of `Program.cs`: `Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);`
+- `Microsoft.Extensions` packages are included automatically in the Web project via `Microsoft.NET.Sdk.Web` - no manual installation needed there.
+- Vue 2, Tabler Icons and Google Fonts are referenced via CDN in `_Layout.cshtml` and load automatically - no installation needed.
 
 ---
 
@@ -95,7 +105,6 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 | `gemma-4-26b-a4b-it` | Instruction-tuned variant - strong at following strict output format rules and keyword extraction |
 | `nemotron3` | Nvidia 120B model - excels at reasoning tasks and handling ambiguous or incomplete text |
 
-
 **Ollama (local):**
 
 | Model name |  Why chosen |
@@ -108,7 +117,18 @@ Users upload email files (`.eml` / `.msg`), and the system uses an LLM to automa
 
 ---
 
+## License
+
+This project is distributed under the Apache License 2.0.
+
+- You are free to use, modify, and distribute this code for both personal and commercial purposes;
+- Attribution is required: include the original copyright notice and license in any copy or substantial portion of the project - Anastasiia Bakhmutova (2026);
+- Modified versions must carry a notice stating that changes were made.
+
+[Full license text](https://github.com/AwanRaskall/llm-tms-order-module/blob/main/LICENSE)
+
+---
+
 set up
 Future Improvements
 CI / CD
-License
