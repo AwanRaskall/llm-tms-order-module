@@ -26,8 +26,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Publish
-        run: dotnet publish "OrderModule.Web/OrderModule.Web.csproj" \
-             -c Release -o ./publish
+        run: dotnet publish "OrderModule.Web/OrderModule.Web.csproj" -c Release -o ./publish
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
